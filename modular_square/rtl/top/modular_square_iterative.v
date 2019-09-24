@@ -3380,7 +3380,7 @@ always@(*)begin
     else temp_ms = temp_ms0[1023:0];
 end
 
-assign ms = reg_finish_ms ? temp_ms : 1024'hx;
+assign ms = temp_ms;
 
 
 
