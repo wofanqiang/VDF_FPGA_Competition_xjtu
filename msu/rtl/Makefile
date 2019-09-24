@@ -46,7 +46,11 @@ VERILATOR_FLAGS       += -DFASTSIM=1
 endif
 
 ifeq ($(DIRECT_TB), 1)
+  ifeq ($(SIMPLE_SQ), 1)
   TOP_FILE             = modular_square_simple.sv
+  else
+  TOP_FILE             = modular_square_wrapper.sv
+  endif
 else
 TOP_FILE               = msu.sv
 endif
@@ -79,7 +83,14 @@ run: msuconfig.vh
 	@echo
 	@echo "-- Large Integer Modular Squaring"
 
-
+#ifeq ($(SIMPLE_SQ), 0)
+#	@echo
+#	@echo "-- GENERATE LUTs -----------------"
+#	mkdir -p obj_dir
+#	cd obj_dir && $(MODSQR_PATH)/gen_reduction_lut.py \
+#                          --nonredundant $(NONREDUNDANT_ELEMENTS) \
+#                          --modulus $(MODULUS)
+#endif
 
 	@echo
 	@echo "-- VERILATE ----------------"
@@ -106,6 +117,62 @@ ifeq ($(VERILATOR_TRACE), 1)
 	@echo "gtkwave obj_dir/logs/vlt_dump.vcd &"
 endif
 	@echo
+
+# Run multiple tests with a random modulus
+judge:
+	for number in 1 2 3 4 5 ; do \
+	    echo "" \
+	    echo "TEST ITERATION $$number" ; \
+	    make clean; MOD_LEN=1024 \
+                    ITERATIONS=1 \
+                    T_FINAL=1000 \
+                    FASTSIM=1 \
+                    RANDOM_MODULUS=1 \
+                    RRANDOM=1 \
+                    VERILATOR_TRACE=0 \
+                    make; \
+	done
+
+# Does not work with the simple multiplier due to verilator bitwidth limitations
+regression:
+	make clean; MOD_LEN=128 \
+                    ITERATIONS=20 \
+                    T_FINAL=30 \
+                    FASTSIM=0 \
+                    VERILATOR_TRACE=0 \
+                    make
+	make clean; MOD_LEN=128 \
+                    ITERATIONS=100 \
+                    T_FINAL=30 \
+                    FASTSIM=0 \
+                    RRANDOM=1 \
+                    VERILATOR_TRACE=0 \
+                    make
+	make clean; MOD_LEN=256 \
+                    ITERATIONS=10 \
+                    T_FINAL=10 \
+                    FASTSIM=0 \
+                    RANDOM_MODULUS=1 \
+                    RRANDOM=1 \
+                    VERILATOR_TRACE=0 \
+                    make
+	make clean; MOD_LEN=512 \
+                    ITERATIONS=10 \
+                    T_FINAL=10 \
+                    FASTSIM=1 \
+                    RANDOM_MODULUS=1 \
+                    RRANDOM=1 \
+                    VERILATOR_TRACE=0 \
+                    make
+	make clean; MOD_LEN=2048 \
+                    ITERATIONS=10 \
+                    T_FINAL=10 \
+                    FASTSIM=1 \
+                    RANDOM_MODULUS=1 \
+                    RRANDOM=1 \
+                    VERILATOR_TRACE=0 \
+                    make
+
 
 ######################################################################
 # Other targets

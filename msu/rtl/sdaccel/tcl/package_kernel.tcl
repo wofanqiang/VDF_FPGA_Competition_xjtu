@@ -44,14 +44,18 @@ set path_to_tmp_project    "./tmp_kernel_pack_${suffix}"
 create_project -force kernel_pack $path_to_tmp_project 
 
 add_files -norecurse [glob $msu_path/msu.sv]
-add_files -norecurse [glob $msu_path/modular_square_wrapper.sv]
+#add_files -norecurse [glob $msu_path/modular_square_wrapper.sv]
 add_files -norecurse [glob msuconfig.vh]
-add_files -norecurse [glob mem/*.dat]
-add_files -norecurse [glob mem/reduction_lut.sv]
+#add_files -norecurse [glob mem/*.dat]
+#add_files -norecurse [glob mem/reduction_lut.sv]
 add_files -norecurse [glob $sdaccel_path/*.sv] 
 add_files -norecurse [glob $sdaccel_path/*.v]
 add_files -norecurse [glob $primitives_path/*.sv]
 add_files -norecurse [glob $modsqr_path/*.sv]
+#add_files -norecurse [glob $modsqr_path/*.v]
+add_files -norecurse [glob $modsqr_path/top/*.v]
+add_files -norecurse [glob $modsqr_path/xpb/*.v]
+add_files -norecurse [glob $modsqr_path/compressor_array/*.v]
 
 set_property top ${krnl_name} [current_fileset]
 
