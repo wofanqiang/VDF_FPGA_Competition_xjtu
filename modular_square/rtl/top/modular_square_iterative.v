@@ -3209,8 +3209,7 @@ always@(*)begin
     IDLE: 
         begin
             if(reg_start_ms)
-                //state_next <= TRANS_DATA;
-                state_next <= COMPRESS_HIGH;
+                state_next <= TRANS_DATA;
             else
                 state_next <= IDLE;
         end
@@ -3258,7 +3257,7 @@ always@(posedge clk)begin
     IDLE: 
         begin
             reg_start_ms                <= start_ms;
-            reg_a                       <= a;
+            reg_a                       <= 1024'b0;
             reg_partial_product_high0   <= 1024'b0;
             reg_partial_product_high1   <= 1024'b0;
             reg_partial_product_low0    <= 1033'b0;
