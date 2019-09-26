@@ -3334,7 +3334,7 @@ always@(posedge clk)begin
     FINISH: 
         begin
             reg_start_ms                <= start_ms;
-            reg_a                       <= ms;
+            reg_a                       <= temp_ms;
             reg_partial_product_high0   <= reg_partial_product_high0;
             reg_partial_product_high1   <= reg_partial_product_high1;
             reg_partial_product_low0    <= reg_partial_product_low0;
@@ -3381,7 +3381,7 @@ always@(*)begin
     else temp_ms = temp_ms0[1023:0];
 end
 
-assign ms = temp_ms;
+assign ms = reg_a;
 
 
 
