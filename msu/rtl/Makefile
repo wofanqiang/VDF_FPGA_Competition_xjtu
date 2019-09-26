@@ -23,7 +23,7 @@ include multiplier.mk
 ITERATIONS            ?= 25
 T_FINAL               ?= 3
 FASTSIM               ?= 1
-INTERMEDIATES         ?= 0
+INTERMEDIATES         ?= 5
 
 include ./verilator.mk
 
