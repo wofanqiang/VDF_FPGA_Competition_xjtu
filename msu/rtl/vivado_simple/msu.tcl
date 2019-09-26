@@ -203,6 +203,7 @@ set files [list \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_4_1020.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_4_5.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_0.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_0_c.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_10.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_100.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_1000.v"] \
@@ -658,6 +659,11 @@ set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
 set file "$origin_dir/../../../modular_square/rtl/xpb/xpb_5_0.v"
+set file [file normalize $file]
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property -name "file_type" -value "Verilog" -objects $file_obj
+
+set file "$origin_dir/../../../modular_square/rtl/xpb/xpb_5_0_c.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
