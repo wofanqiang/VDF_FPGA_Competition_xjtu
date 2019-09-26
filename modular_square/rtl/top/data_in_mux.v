@@ -1,7 +1,9 @@
 module data_in_mux
 (
+    input clk,
     input [1023:0] a,
     input sel_hp,
+    
 
     input   [1023:0]  partial_product_high0,
     input   [1023:0]  partial_product_high1,
@@ -4125,6 +4127,7 @@ wire  [511:0]  u1_col_out_1022;
 wire  [511:0]  u1_col_out_1023;
 
 first_reduction_data  u1_first_reduction_data (
+    .clk(clk),
     .partial_product_high0   ( partial_product_high0   ),
     .partial_product_high1   ( partial_product_high1   ),
     .partial_product_low0    ( partial_product_low0    ),

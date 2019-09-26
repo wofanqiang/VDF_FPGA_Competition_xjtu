@@ -1,5 +1,6 @@
 module xpb_2048
 (
+    input clk,
     input [1023:0] data_in0, 
     input [1023:0] data_in1, 
 
@@ -421,6 +422,7 @@ module xpb_2048
 
 
 xpb_1024 u0_xpb_1024(
+.clk(clk),
 .data_in(data_in0),
 
 
@@ -633,8 +635,8 @@ xpb_1024 u0_xpb_1024(
 );
 
 xpb_1024 u1_xpb_1024(
+.clk(clk),
 .data_in(data_in1),
-
 
 .data_out_0(data_out_205),
 .data_out_1(data_out_206),

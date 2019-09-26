@@ -7,7 +7,7 @@ module xpb_9
 );
 
 
-xpb_5_0  u_xpb_5_0 (
+xpb_5_0_c  u_xpb_5_0_c (
 .data_in( data_in[4 : 0]),
 .data_out(data_out_0)
 );

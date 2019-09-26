@@ -1,5 +1,6 @@
 module first_reduction_data
 (
+    input clk,
     input [1023:0] partial_product_high0,
     input [1023:0] partial_product_high1,
     input [1032:0] partial_product_low0,
@@ -2061,6 +2062,7 @@ wire  [409:0]  u0_col_out_1022;
 wire  [409:0]  u0_col_out_1023;
 
 xpb_2018_col  u0_xpb_2018_col (
+    .clk(clk),
     .data_in0                ( partial_product_high0       ),
     .data_in1                ( partial_product_high1       ),
 

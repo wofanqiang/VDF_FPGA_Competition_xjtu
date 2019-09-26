@@ -1,5 +1,6 @@
 module xpb_5_485
 (
+    input clk, 
     input [5:1] data_in, 
     output [1024:1] data_out 
 ); 
@@ -8,7 +9,7 @@ reg [1024:1] xpb;
 
 assign data_out = xpb; 
 
-always@(*) begin
+always@(posedge clk) begin
     case(data_in)
     5'b00000 : xpb = 1024'h0;
     5'b00001 : xpb = 1024'ha2faf86643bd35390cfcdd6e6ad8b53c38c2bee7714c48b8bc406c26462e5eeb6fb5d8b73d6801c442688eed6e94b678a59a1428db8dccb5bcfcd7724ab34ba85751be2722b106299aefdeac7d507446b05e6c81d94206e22d42b371d69ab01506679c78461754470042e165f33ab7e1a268aab6dca74d50a64ee464aa5f6e46;

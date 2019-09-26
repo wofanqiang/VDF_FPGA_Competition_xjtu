@@ -1100,6 +1100,7 @@ wire  [511:0]  col_out_1022;
 wire  [511:0]  col_out_1023;
 
 data_in_mux  u_data_in_mux (
+    .clk(clk),
     .a                       ( reg_a                       ),
     .sel_hp                  ( sel_hp                  ),
     .partial_product_high0   ( partial_product_high0   ),
