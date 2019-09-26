@@ -68,7 +68,8 @@ public:
     }
     
     virtual uint64_t msu_words_out() {
-        return(T_LEN/MSU_WORD_LEN + words_out);
+        //return(T_LEN/MSU_WORD_LEN + words_out);
+        return 32;
     }
 
     virtual void pack(mpz_t msu_in, uint64_t t_start, uint64_t t_final,
@@ -131,7 +132,8 @@ public:
     }
     
     virtual uint64_t msu_words_out() {
-        return(words_out);
+        //return(words_out);
+        return 31;
     }
 
     virtual void unpack(mpz_t sq_out, uint64_t *t_final, mpz_t msu_out,
@@ -153,7 +155,8 @@ public:
     }
     
     virtual uint64_t msu_words_out() {
-        return(T_LEN/MSU_WORD_LEN   + mod_len / (BN_BUFFER_SIZE*8));
+        //return(T_LEN/MSU_WORD_LEN   + mod_len / (BN_BUFFER_SIZE*8));
+        return 30;
     }
 
     virtual void pack(mpz_t msu_in, uint64_t t_start, uint64_t t_final,
@@ -188,7 +191,8 @@ public:
     }
     
     virtual uint64_t msu_words_out() {
-        return(mod_len / (BN_BUFFER_SIZE*8));
+        //return(mod_len / (BN_BUFFER_SIZE*8));
+        return 29;
     }
 
     virtual void unpack(mpz_t sq_out, uint64_t *t_final, mpz_t msu_out,
