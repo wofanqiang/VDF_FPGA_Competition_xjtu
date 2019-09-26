@@ -165,7 +165,8 @@ set files [list \
  [file normalize "${origin_dir}/../../../modular_square/rtl/top/data_in_mux.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/top/first_reduction_data.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/top/modular_square_iterative.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/top/partial_product_sel.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/top/msq_half_product_gene.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/top/msq_common_array.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_12_8.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_162_48.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_18_12.v"] \
@@ -471,7 +472,12 @@ set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
-set file "$origin_dir/../../../modular_square/rtl/top/partial_product_sel.v"
+set file "$origin_dir/../../../modular_square/rtl/top/msq_common_array.v"
+set file [file normalize $file]
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property -name "file_type" -value "Verilog" -objects $file_obj
+
+set file "$origin_dir/../../../modular_square/rtl/top/msq_half_product_gene.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
