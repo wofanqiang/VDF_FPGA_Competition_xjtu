@@ -18,7 +18,7 @@
 # Multiplier configuration
 ############################################################################
 
-SIMPLE_SQ             ?= 0
+SIMPLE_SQ             ?= 1
 ifeq ($(SIMPLE_SQ), 1)
 MOD_LEN               ?= 128
 else
