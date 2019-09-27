@@ -21,7 +21,7 @@ help::
 ############################################################################
 include ../../multiplier.mk
 
-HOST_FLAGS_HW_EMU  = -e -f 1 -t 5
+HOST_FLAGS_HW_EMU  = -e -f 1
 HOST_FLAGS_FPGA    = -e -f 10
 
 ############################################################################
@@ -67,7 +67,7 @@ PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
                    $(PLACER_CONSTRS)"
 
-LDCLFLAGS += --kernel_frequency 110
+LDCLFLAGS += --kernel_frequency 125
 
 ############################################################################
 # AWS/SDAccel configuration
@@ -143,7 +143,7 @@ BINARY_CONTAINER_AWS = vdf.$(TARGET).$(DSA).awsxclbin
 
 CP = cp -rf
 
-S3_BUCKET          = vdfsn
+S3_BUCKET          = vdfxjtu
 
 
 ############################################################################

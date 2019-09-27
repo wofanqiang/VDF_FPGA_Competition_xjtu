@@ -204,7 +204,11 @@ module msu
    // Modsqr function
    //////////////////////////////////////////////////////////////////////
 
-modular_square_simple
+`ifdef SIMPLE_SQ
+   modular_square_simple
+`else
+   modular_square_wrapper
+`endif
      #(
        .MOD_LEN(SQ_IN_BITS)
        )

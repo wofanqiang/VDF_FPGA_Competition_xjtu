@@ -31,7 +31,7 @@ hw_emu_simple:
 	OBJ=obj_hw_emu MOD_LEN=1024 SIMPLE_SQ=1 $(MAKE) -C $(SDACCEL_DIR) hw_emu
 
 hw:
-	MOD_LEN=1024 SIMPLE_SQ=0 $(MAKE) -C $(SDACCEL_DIR) hw
+	MOD_LEN=1024 SIMPLE_SQ=1 $(MAKE) -C $(SDACCEL_DIR) hw
 
 
 # This target is used by the test portal to perform hardware emulation

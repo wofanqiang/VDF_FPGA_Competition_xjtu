@@ -116,7 +116,7 @@ set proj_dir [get_property directory [current_project]]
 
 # Set project properties
 set obj [current_project]
-#set_property -name "board_part_repo_paths" -value "/home/snpeffer/src/vdf/artya7/vivado-boards-master/new/board_files" -objects $obj
+set_property -name "board_part_repo_paths" -value "/home/snpeffer/src/vdf/artya7/vivado-boards-master/new/board_files" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "dsa.accelerator_binary_content" -value "bitstream" -objects $obj
 set_property -name "dsa.accelerator_binary_format" -value "xclbin2" -objects $obj
