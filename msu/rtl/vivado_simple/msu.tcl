@@ -164,8 +164,8 @@ set files [list \
  [file normalize "${origin_dir}/../../../modular_square/rtl/top/alu.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/top/ms_new.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_243_72.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_27_8.v"] \  
- [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_3_2.v"] \   
+ [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_27_8.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_3_2.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_4_3.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_6_4.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/compressor_array/compressor_81_24.v"] \
@@ -236,10 +236,10 @@ set files [list \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_5_95.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_7_0.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/xpb_first.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/and_array.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/ctrl_gene.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/msq_product_period4.v"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/xpb/sel_and_array_in.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/partial_product/ctrl_gene.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/partial_product/msq_product_period4.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/partial_product/sel_and_array_in.v"] \
+ [file normalize "${origin_dir}/../../../modular_square/rtl/partial_product/and_array.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -659,22 +659,22 @@ set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
-set file "$origin_dir/../../../modular_square/rtl/xpb/and_array.v"
+set file "$origin_dir/../../../modular_square/rtl/partial_product/and_array.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
-set file "$origin_dir/../../../modular_square/rtl/xpb/ctrl_gene.v"
+set file "$origin_dir/../../../modular_square/rtl/partial_product/ctrl_gene.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
-set file "$origin_dir/../../../modular_square/rtl/xpb/msq_product_period4.v"
+set file "$origin_dir/../../../modular_square/rtl/partial_product/msq_product_period4.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
 
-set file "$origin_dir/../../../modular_square/rtl/xpb/sel_and_array_in.v"
+set file "$origin_dir/../../../modular_square/rtl/partial_product/sel_and_array_in.v"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog" -objects $file_obj
