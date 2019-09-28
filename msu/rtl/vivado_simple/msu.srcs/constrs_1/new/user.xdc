@@ -1,5 +1,5 @@
 
-create_clock -period 9.000 -name ap_clk -waveform {0.000 4.500} [get_ports ap_clk]
+#create_clock -period 9.000 -name ap_clk -waveform {0.000 4.500} [get_ports ap_clk]
 
 #create_pblock sl_exclusion
 #resize_pblock [get_pblocks sl_exclusion] -add {CLOCKREGION_X4Y0:CLOCKREGION_X5Y9}

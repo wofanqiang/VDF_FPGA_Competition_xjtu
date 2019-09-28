@@ -37,14 +37,14 @@ module modular_square_simple
 
 
 
-   modular_square_iterative  u_modular_square_iterative (
+   ms_new  u_ms_new (
        .clk                     ( clk         ),
        .rst                     ( reset         ),
        .a                       ( sq_in           ),
-       .start_ms                ( start    ),
+       .start                ( start    ),
 
        .ms                      ( sq_out          ),
-       .finish_ms               ( valid   )
+       .valid               ( valid   )
    );
 
 endmodule
