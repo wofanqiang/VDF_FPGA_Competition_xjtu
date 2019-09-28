@@ -56,6 +56,7 @@ add_files -norecurse [glob $modsqr_path/*.sv]
 add_files -norecurse [glob $modsqr_path/top/*.v]
 add_files -norecurse [glob $modsqr_path/xpb/*.v]
 add_files -norecurse [glob $modsqr_path/compressor_array/*.v]
+add_files -norecurse [glob $modsqr_path/partial_product/*.v]
 
 set_property top ${krnl_name} [current_fileset]
 
