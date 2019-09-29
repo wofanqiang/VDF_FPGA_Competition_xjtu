@@ -1296,8 +1296,8 @@ localparam P3 = 1026'h21207d00145ca9e5a61106785310ed5f4546209928066e16679962c011
 
 //-----------------------Stage 1------------------------------------
 
-reg [1287:0] reg_intermediate0;
-reg [1287:0] reg_intermediate1;
+(* max_fanout = 20 *)reg [1287:0] reg_intermediate0;
+(* max_fanout = 20 *)reg [1287:0] reg_intermediate1;
 
 
 wire [1026:0] temp_ms0;
@@ -1305,7 +1305,7 @@ wire [1026:0] temp_ms1;
 wire [1026:0] temp_ms2;
 wire [1026:0] temp_ms3;
 
-reg [1023:0] temp_ms;
+(* max_fanout = 20 *)reg [1023:0] temp_ms;
 
 
 wire [105:0] u0_col_out_0;
@@ -7530,8 +7530,8 @@ compressor_array_3_2_DW #(.DW(1024)) u3_compressor_array_3_2_1024
     .d_out_s(u3_d_out_s)
 );
 
-reg [1024:0] reg_c;
-reg [1023:0] reg_s;
+(* max_fanout = 20 *)reg [1024:0] reg_c;
+(* max_fanout = 20 *)reg [1023:0] reg_s;
 always@(posedge clk)begin
     reg_c <= {u3_d_out_c, 1'b0};
     reg_s <= u3_d_out_s;

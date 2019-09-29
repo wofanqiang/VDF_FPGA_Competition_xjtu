@@ -21,22 +21,22 @@ localparam FINISH           = 8'b10000000;
 
 localparam LOOPS = 31'd1073741824;
 
-reg [7:0] state_current;
-reg [7:0] state_next;
+(* max_fanout = 20 *)reg [7:0] state_current;
+(* max_fanout = 20 *)reg [7:0] state_next;
 
-reg [1023:0] reg_a;
+(* max_fanout = 20 *)reg [1023:0] reg_a;
 //reg [1023:0] reg_b;
 
-reg reg_start;
-reg reg_clear_i;
-reg reg_valid;
+(* max_fanout = 20 *)reg reg_start;
+(* max_fanout = 20 *)reg reg_clear_i;
+(* max_fanout = 20 *)reg reg_valid;
 
-reg [32:0] counter;
+(* max_fanout = 20 *)reg [32:0] counter;
 
 
 
 wire [1023:0] u0_al;
-reg [1:0] reg_u0_sel;
+(* max_fanout = 20 *)reg [1:0] reg_u0_sel;
 
 assign u0_al = reg_a;
 // partial_product Outputs
