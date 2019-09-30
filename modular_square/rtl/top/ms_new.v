@@ -21,22 +21,56 @@ localparam FINISH           = 8'b10000000;
 
 localparam LOOPS = 31'd1073741824;
 
-(* max_fanout = 50 *)reg [7:0] state_current;
-(* max_fanout = 50 *)reg [7:0] state_next;
+reg [7:0] state_current;
+reg [7:0] state_next;
 
-(* max_fanout = 50 *)reg [1023:0] reg_a;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_0;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_1;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_2;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_3;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_4;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_5;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_6;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_7;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_8;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_a_9;
 //reg [1023:0] reg_b;
 
-(* max_fanout = 50 *)reg reg_start;
-(* max_fanout = 50 *)reg reg_clear_i;
-(* max_fanout = 50 *)reg reg_valid;
+reg reg_start;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_0;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_1;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_2;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_3;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_4;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_5;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_6;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_7;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_8;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg reg_clear_i_9;
 
-(* max_fanout = 50 *)reg [32:0] counter;
+
+
+
+reg reg_valid;
+
+reg [32:0] counter;
 
 
 
 wire [1023:0] u0_al;
-(* max_fanout = 50 *)reg [1:0] reg_u0_sel;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_0;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_1;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_2;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_3;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_4;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_5;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_6;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_7;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_8;
+(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1:0] reg_u0_sel_9;
 
 assign u0_al = reg_a;
 // partial_product Outputs
@@ -3998,6 +4032,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b1;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= 1024'b0;
+            reg_a_1           <= 1024'b0;
+            reg_a_2           <= 1024'b0;
+            reg_a_3           <= 1024'b0;
+            reg_a_4           <= 1024'b0;
+            reg_a_5           <= 1024'b0;
+            reg_a_6           <= 1024'b0;
+            reg_a_7           <= 1024'b0;
+            reg_a_8           <= 1024'b0;
+            reg_a_9           <= 1024'b0;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b1;
+            reg_clear_i_1     <= 1'b1;
+            reg_clear_i_2     <= 1'b1;
+            reg_clear_i_3     <= 1'b1;
+            reg_clear_i_4     <= 1'b1;
+            reg_clear_i_5     <= 1'b1;
+            reg_clear_i_6     <= 1'b1;
+            reg_clear_i_7     <= 1'b1;
+            reg_clear_i_8     <= 1'b1;
+            reg_clear_i_9     <= 1'b1;
         end
 
     TRANS_DATA: 
@@ -4008,6 +4075,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= a;
+            reg_a_1           <= a;
+            reg_a_2           <= a;
+            reg_a_3           <= a;
+            reg_a_4           <= a;
+            reg_a_5           <= a;
+            reg_a_6           <= a;
+            reg_a_7           <= a;
+            reg_a_8           <= a;
+            reg_a_9           <= a;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
         end
 
     ACCUMLATE_1:
@@ -4018,6 +4118,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_1           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_2           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_3           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_4           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_5           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_6           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_7           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_8           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_9           <= {reg_a[895:0], reg_a[1023:896]};
+
+            reg_u0_sel_0      <= 2'b01;
+            reg_u0_sel_1      <= 2'b01;
+            reg_u0_sel_2      <= 2'b01;
+            reg_u0_sel_3      <= 2'b01;
+            reg_u0_sel_4      <= 2'b01;
+            reg_u0_sel_5      <= 2'b01;
+            reg_u0_sel_6      <= 2'b01;
+            reg_u0_sel_7      <= 2'b01;
+            reg_u0_sel_8      <= 2'b01;
+            reg_u0_sel_9      <= 2'b01;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
         end
 
     ACCUMLATE_2: 
@@ -4028,6 +4161,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_1           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_2           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_3           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_4           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_5           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_6           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_7           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_8           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_9           <= {reg_a[895:0], reg_a[1023:896]};
+
+            reg_u0_sel_0      <= 2'b10;
+            reg_u0_sel_1      <= 2'b10;
+            reg_u0_sel_2      <= 2'b10;
+            reg_u0_sel_3      <= 2'b10;
+            reg_u0_sel_4      <= 2'b10;
+            reg_u0_sel_5      <= 2'b10;
+            reg_u0_sel_6      <= 2'b10;
+            reg_u0_sel_7      <= 2'b10;
+            reg_u0_sel_8      <= 2'b10;
+            reg_u0_sel_9      <= 2'b10;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
         end
     ACCUMLATE_3: 
         begin
@@ -4037,6 +4203,41 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_1           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_2           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_3           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_4           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_5           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_6           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_7           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_8           <= {reg_a[895:0], reg_a[1023:896]};
+            reg_a_9           <= {reg_a[895:0], reg_a[1023:896]};
+
+            reg_u0_sel_0      <= 2'b11;
+            reg_u0_sel_1      <= 2'b11;
+            reg_u0_sel_2      <= 2'b11;
+            reg_u0_sel_3      <= 2'b11;
+            reg_u0_sel_4      <= 2'b11;
+            reg_u0_sel_5      <= 2'b11;
+            reg_u0_sel_6      <= 2'b11;
+            reg_u0_sel_7      <= 2'b11;
+            reg_u0_sel_8      <= 2'b11;
+            reg_u0_sel_9      <= 2'b11;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
+
+            
         end
     ACCUMLATE_4: 
         begin
@@ -4046,6 +4247,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= 1024'h0;
+            reg_a_1           <= 1024'h0;
+            reg_a_2           <= 1024'h0;
+            reg_a_3           <= 1024'h0;
+            reg_a_4           <= 1024'h0;
+            reg_a_5           <= 1024'h0;
+            reg_a_6           <= 1024'h0;
+            reg_a_7           <= 1024'h0;
+            reg_a_8           <= 1024'h0;
+            reg_a_9           <= 1024'h0;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
         end
 
     REDUCTION: 
@@ -4056,6 +4290,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b1;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= 1024'h0;
+            reg_a_1           <= 1024'h0;
+            reg_a_2           <= 1024'h0;
+            reg_a_3           <= 1024'h0;
+            reg_a_4           <= 1024'h0;
+            reg_a_5           <= 1024'h0;
+            reg_a_6           <= 1024'h0;
+            reg_a_7           <= 1024'h0;
+            reg_a_8           <= 1024'h0;
+            reg_a_9           <= 1024'h0;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b1;
+            reg_clear_i_1     <= 1'b1;
+            reg_clear_i_2     <= 1'b1;
+            reg_clear_i_3     <= 1'b1;
+            reg_clear_i_4     <= 1'b1;
+            reg_clear_i_5     <= 1'b1;
+            reg_clear_i_6     <= 1'b1;
+            reg_clear_i_7     <= 1'b1;
+            reg_clear_i_8     <= 1'b1;
+            reg_clear_i_9     <= 1'b1;
         end
 
     FINISH: 
@@ -4066,6 +4333,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b0;
             reg_valid       <= 1'b1;
+
+            reg_a_0           <= u1_ms;
+            reg_a_1           <= u1_ms;
+            reg_a_2           <= u1_ms;
+            reg_a_3           <= u1_ms;
+            reg_a_4           <= u1_ms;
+            reg_a_5           <= u1_ms;
+            reg_a_6           <= u1_ms;
+            reg_a_7           <= u1_ms;
+            reg_a_8           <= u1_ms;
+            reg_a_9           <= u1_ms;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b0;
+            reg_clear_i_1     <= 1'b0;
+            reg_clear_i_2     <= 1'b0;
+            reg_clear_i_3     <= 1'b0;
+            reg_clear_i_4     <= 1'b0;
+            reg_clear_i_5     <= 1'b0;
+            reg_clear_i_6     <= 1'b0;
+            reg_clear_i_7     <= 1'b0;
+            reg_clear_i_8     <= 1'b0;
+            reg_clear_i_9     <= 1'b0;
         end
 
     default: 
@@ -4075,6 +4375,39 @@ always@(posedge clk)begin
             reg_start       <= start;
             reg_clear_i     <= 1'b1;
             reg_valid       <= 1'b0;
+
+            reg_a_0           <= 1024'h0;
+            reg_a_1           <= 1024'h0;
+            reg_a_2           <= 1024'h0;
+            reg_a_3           <= 1024'h0;
+            reg_a_4           <= 1024'h0;
+            reg_a_5           <= 1024'h0;
+            reg_a_6           <= 1024'h0;
+            reg_a_7           <= 1024'h0;
+            reg_a_8           <= 1024'h0;
+            reg_a_9           <= 1024'h0;
+
+            reg_u0_sel_0      <= 2'b00;
+            reg_u0_sel_1      <= 2'b00;
+            reg_u0_sel_2      <= 2'b00;
+            reg_u0_sel_3      <= 2'b00;
+            reg_u0_sel_4      <= 2'b00;
+            reg_u0_sel_5      <= 2'b00;
+            reg_u0_sel_6      <= 2'b00;
+            reg_u0_sel_7      <= 2'b00;
+            reg_u0_sel_8      <= 2'b00;
+            reg_u0_sel_9      <= 2'b00;
+
+            reg_clear_i_0     <= 1'b1;
+            reg_clear_i_1     <= 1'b1;
+            reg_clear_i_2     <= 1'b1;
+            reg_clear_i_3     <= 1'b1;
+            reg_clear_i_4     <= 1'b1;
+            reg_clear_i_5     <= 1'b1;
+            reg_clear_i_6     <= 1'b1;
+            reg_clear_i_7     <= 1'b1;
+            reg_clear_i_8     <= 1'b1;
+            reg_clear_i_9     <= 1'b1;
         end
     endcase
 end
