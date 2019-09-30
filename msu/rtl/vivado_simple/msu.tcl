@@ -767,7 +767,7 @@ set_property -name "display_name" -value "synth_1_synth_report_utilization_0" -o
 set obj [get_runs synth_1]
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
 set_property -name "part" -value "xcvu9p-flga2104-1-e" -objects $obj
-set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY full [get_runs synth_1]
+set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY rebuilt [get_runs synth_1]
 set_property STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT 200 [get_runs synth_1]
 # set the current synth run
 current_run -synthesis [get_runs synth_1]
