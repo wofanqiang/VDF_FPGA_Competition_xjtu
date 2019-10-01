@@ -1296,29 +1296,8 @@ localparam P3 = 1026'h21207d00145ca9e5a61106785310ed5f4546209928066e16679962c011
 
 //-----------------------Stage 1------------------------------------
 
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1;
-
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_0;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_0;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_1;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_1;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_2;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_2;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_3;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_3;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_4;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_4;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_5;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_5;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_6;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_6;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_7;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_7;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_8;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_8;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate0_9;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1287:0] reg_intermediate1_9;
+reg [1287:0] reg_intermediate0;
+reg [1287:0] reg_intermediate1;
 
 wire [1026:0] temp_ms0;
 wire [1026:0] temp_ms1;
@@ -7589,65 +7568,24 @@ compressor_array_3_2_DW #(.DW(1024)) u3_compressor_array_3_2_1024
     .d_out_s(u3_d_out_s)
 );
 
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_0;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_1;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_2;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_3;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_4;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_5;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_6;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_7;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_8;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_c_9;
+reg [1023:0] reg_c;
+reg [1023:0] reg_s;
 
-
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1023:0] reg_s;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_0;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_1;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_2;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_3;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_4;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_5;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_6;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_7;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_8;
-(* EQUIVALENT_REGISTER_REMOVAL="NO" *)reg [1024:0] reg_s_9;
 
 
 always@(posedge clk)begin
-    reg_c <= {u3_d_out_c, 1'b0};
+    reg_c <= u3_d_out_c;
     reg_s <= u3_d_out_s;
-    reg_c_0 <= {u3_d_out_c, 1'b0};
-    reg_c_1 <= {u3_d_out_c, 1'b0};
-    reg_c_2 <= {u3_d_out_c, 1'b0};
-    reg_c_3 <= {u3_d_out_c, 1'b0};
-    reg_c_4 <= {u3_d_out_c, 1'b0};
-    reg_c_5 <= {u3_d_out_c, 1'b0};
-    reg_c_6 <= {u3_d_out_c, 1'b0};
-    reg_c_7 <= {u3_d_out_c, 1'b0};
-    reg_c_8 <= {u3_d_out_c, 1'b0};
-    reg_c_9 <= {u3_d_out_c, 1'b0};
-    reg_s_0 <= u3_d_out_s;
-    reg_s_1 <= u3_d_out_s;
-    reg_s_2 <= u3_d_out_s;
-    reg_s_3 <= u3_d_out_s;
-    reg_s_4 <= u3_d_out_s;
-    reg_s_5 <= u3_d_out_s;
-    reg_s_6 <= u3_d_out_s;
-    reg_s_7 <= u3_d_out_s;
-    reg_s_8 <= u3_d_out_s;
-    reg_s_9 <= u3_d_out_s;
 end
 
 
 
 //-----------------------Stage 2------------------------------------
 
-assign temp_ms0 = reg_c + reg_s;
-assign temp_ms1 = reg_c + reg_s - P1;
-assign temp_ms2 = reg_c + reg_s - P2;
-assign temp_ms3 = reg_c + reg_s - P3;
+assign temp_ms0 = {reg_c, 1'b0} + reg_s;
+assign temp_ms1 = {reg_c, 1'b0} + reg_s - P1;
+assign temp_ms2 = {reg_c, 1'b0} + reg_s - P2;
+assign temp_ms3 = {reg_c, 1'b0} + reg_s - P3;
 always@(*)begin
     if(!temp_ms3[1026]) temp_ms = temp_ms3[1023:0];
     else if(!temp_ms2[1026]) temp_ms = temp_ms2[1023:0];
