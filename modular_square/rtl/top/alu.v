@@ -7490,50 +7490,10 @@ always@(posedge clk)begin
     if(rst)begin
         reg_intermediate0 <= 1288'h0;
         reg_intermediate1 <= 1288'h0;
-        reg_intermediate0_0 <= 1288'h0;
-        reg_intermediate1_0 <= 1288'h0;
-        reg_intermediate0_1 <= 1288'h0;
-        reg_intermediate1_1 <= 1288'h0;
-        reg_intermediate0_2 <= 1288'h0;
-        reg_intermediate1_2 <= 1288'h0;
-        reg_intermediate0_3 <= 1288'h0;
-        reg_intermediate1_3 <= 1288'h0;
-        reg_intermediate0_4 <= 1288'h0;
-        reg_intermediate1_4 <= 1288'h0;
-        reg_intermediate0_5 <= 1288'h0;
-        reg_intermediate1_5 <= 1288'h0;
-        reg_intermediate0_6 <= 1288'h0;
-        reg_intermediate1_6 <= 1288'h0;
-        reg_intermediate0_7 <= 1288'h0;
-        reg_intermediate1_7 <= 1288'h0;
-        reg_intermediate0_8 <= 1288'h0;
-        reg_intermediate1_8 <= 1288'h0;
-        reg_intermediate0_9 <= 1288'h0;
-        reg_intermediate1_9 <= 1288'h0;
     end
     else begin
         reg_intermediate0 <= u1_row_out_0;
         reg_intermediate1 <= u1_row_out_1;
-        reg_intermediate0_0 <= u1_row_out_0;
-        reg_intermediate1_0 <= u1_row_out_1;
-        reg_intermediate0_1 <= u1_row_out_0;
-        reg_intermediate1_1 <= u1_row_out_1;
-        reg_intermediate0_2 <= u1_row_out_0;
-        reg_intermediate1_2 <= u1_row_out_1;
-        reg_intermediate0_3 <= u1_row_out_0;
-        reg_intermediate1_3 <= u1_row_out_1;
-        reg_intermediate0_4 <= u1_row_out_0;
-        reg_intermediate1_4 <= u1_row_out_1;
-        reg_intermediate0_5 <= u1_row_out_0;
-        reg_intermediate1_5 <= u1_row_out_1;
-        reg_intermediate0_6 <= u1_row_out_0;
-        reg_intermediate1_6 <= u1_row_out_1;
-        reg_intermediate0_7 <= u1_row_out_0;
-        reg_intermediate1_7 <= u1_row_out_1;
-        reg_intermediate0_8 <= u1_row_out_0;
-        reg_intermediate1_8 <= u1_row_out_1;
-        reg_intermediate0_9 <= u1_row_out_0;
-        reg_intermediate1_9 <= u1_row_out_1;
     end
 end
 
