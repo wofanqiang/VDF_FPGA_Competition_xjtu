@@ -4,6 +4,7 @@ module compressor_3_2
     output [2:1] d_out //输出为{2^1, 2^0}
 ); 
 
+/*
 reg [2:1] count; 
 
 assign d_out = count; 
@@ -20,5 +21,10 @@ always@(*) begin
     3'b111 : count = 2'd3;
     endcase
 end
+*/
 
+//assign d_out[1] =  d_in[3] ^ d_in[2] ^ d_in[1];
+//assign d_out[2] =  (d_in[3] & d_in[2] ) | (d_in[1] & (d_in[3] ^ d_in[2]));
+
+assign d_out = d_in[3] + d_in[2] + d_in[1];
 endmodule
