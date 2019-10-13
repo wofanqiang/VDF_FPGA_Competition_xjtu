@@ -4054,7 +4054,7 @@ always@(posedge clk)begin
 
     REDUCTION: 
         begin
-            reg_a           <= 1204'h0;
+            reg_a           <= 1024'h0;
             //reg_b           <= reg_b << 256;
             reg_u0_sel      <= 2'b00;
             reg_start       <= start;
