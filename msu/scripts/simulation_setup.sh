@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep Ubuntu /etc/os-release > /dev/null
+grep Deepin /etc/os-release > /dev/null
 if [ $? == 0 ]
 then
     # Ubuntu

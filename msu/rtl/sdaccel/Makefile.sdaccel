@@ -21,7 +21,7 @@ help::
 ############################################################################
 include ../../multiplier.mk
 
-HOST_FLAGS_HW_EMU  = -e -f 10
+HOST_FLAGS_HW_EMU  = -e -f 1
 HOST_FLAGS_FPGA    = -e -f 10
 
 ############################################################################
@@ -38,9 +38,7 @@ LDCLFLAGS += -DMSU_SQ_OUT_BITS_DEF=$(SQ_OUT_BITS)
 
 
 LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
-                   {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={200}"
-LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
-                   {STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY}={none}"
+                   {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.OPT_DESIGN.ARGS.DIRECTIVE}={Explore}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
@@ -48,7 +46,7 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_SpreadLogic_High}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
+                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={Explore}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
@@ -69,7 +67,7 @@ PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
                    $(PLACER_CONSTRS)"
 
-LDCLFLAGS += --kernel_frequency 125
+LDCLFLAGS += --kernel_frequency 161
 
 ############################################################################
 # AWS/SDAccel configuration
@@ -145,7 +143,7 @@ BINARY_CONTAINER_AWS = vdf.$(TARGET).$(DSA).awsxclbin
 
 CP = cp -rf
 
-S3_BUCKET          = vdffpgaxjtu
+S3_BUCKET          = vdfsn
 
 
 ############################################################################
@@ -187,7 +185,7 @@ $(BINARY_CONTAINER_AWS): $(BINARY_CONTAINER)
 
 
 # Generate the LUTs. reduction_lut_000.dat will be present for any bitwidth.
-#$(BINARY_CONTAINER_XO): mem/reduction_lut_000.dat
+$(BINARY_CONTAINER_XO): mem/reduction_lut_000.dat
 $(BINARY_CONTAINER_XO): msuconfig.vh
 
 sdaccel.ini:

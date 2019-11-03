@@ -23,7 +23,7 @@ module modular_square_wrapper
    #(
      parameter int MOD_LEN               = `MOD_LEN_DEF,
 
-     parameter int WORD_LEN              = 16,
+     parameter int WORD_LEN              = 17,
      parameter int REDUNDANT_ELEMENTS    = 2,
      parameter int NONREDUNDANT_ELEMENTS = MOD_LEN / WORD_LEN,
      parameter int NUM_ELEMENTS          = REDUNDANT_ELEMENTS +
@@ -41,7 +41,7 @@ module modular_square_wrapper
     output logic                   valid
    );
 
-   localparam int BIT_LEN               = 17;
+   localparam int BIT_LEN               = 18;
    localparam int IO_STAGES             = 3;
 
    logic               start_stages[IO_STAGES];
@@ -95,17 +95,19 @@ module modular_square_wrapper
       end
    endgenerate
 
-   modular_square_8_cycles 
+   modular_square_1_cycle 
      #(
-       .NONREDUNDANT_ELEMENTS(NONREDUNDANT_ELEMENTS)
+         .NUM_ELEMENTS(62),
+         .BIT_LEN(18)     ,
+         .WORD_LEN(17)    
        )
    modsqr(
           .clk                (clk),
           .reset              (reset),
           .start              (start_stages[IO_STAGES-1]),
-          .sq_in              (sq_in_stages[IO_STAGES-1]),
+          .A              (sq_in_stages[IO_STAGES-1]),
           .sq_out             (sq_out_stages[0]),
-          .valid              (valid_stages[0])
+          .ms              (valid_stages[0])
           );
 
 endmodule

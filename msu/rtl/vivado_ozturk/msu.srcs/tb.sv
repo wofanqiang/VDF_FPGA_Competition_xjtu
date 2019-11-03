@@ -20,16 +20,26 @@ module tb();
    localparam integer MOD_LEN = 1024;
    //localparam integer MOD_LEN = 128;
 
+   // Ozturk parameters
+   localparam integer WORD_LEN         = 17;
+   localparam integer BIT_LEN          = 18;
+   localparam integer AXI_LEN          = 32;
+   localparam integer SQ_IN_BITS       = `SQ_IN_BITS_DEF;
+   localparam integer SQ_OUT_BITS      = `SQ_OUT_BITS_DEF;
+   localparam         MODULUS          = `MODULUS_DEF;
+   
    
    logic                   clk;
    logic                   reset;
    logic                   start;
    logic                   valid;
    logic [MOD_LEN-1:0]     modulus;
-   logic [MOD_LEN-1:0]     sq_in;
-   logic [MOD_LEN-1:0]     sq_out;
+   logic [SQ_IN_BITS-1:0]  sq_in;
+   logic [SQ_OUT_BITS-1:0] sq_out;
    logic [MOD_LEN-1:0]     sq_out_expected;
-   logic [MOD_LEN-1:0]     sq_out_actual;
+   logic [SQ_OUT_BITS-1:0] sq_out_actual;
+   logic [SQ_OUT_BITS-1:0] sq_out_reducing;
+   logic [MOD_LEN-1:0]     sq_out_reduced;
 
    integer                 t_start;
    integer                 t_final;
@@ -43,7 +53,7 @@ module tb();
    integer                 total_cycle_count;
    integer                 total_squarings;
    
-   modular_square_simple
+   modular_square_wrapper
      #(
        .MOD_LEN(MOD_LEN)
        )
@@ -122,16 +132,25 @@ module tb();
             total_cycle_count    = total_cycle_count + 1;
          end
 
-         sq_out_actual = sq_out_actual;
+         // Reduce the result from polynomial form
+         sq_out_reducing = 0;
+         for(i = 0; i < SQ_OUT_BITS / AXI_LEN; i++) begin
+            if(i > 0) begin
+               sq_out_reducing <<= WORD_LEN;
+               sq_out_actual   <<= AXI_LEN;
+            end
+            sq_out_reducing += sq_out_actual[SQ_OUT_BITS-AXI_LEN +: BIT_LEN];
+         end
+         sq_out_reduced = sq_out_reducing % MODULUS;
 
          $display("%5d %0.2f %x", t_final, 
                   real'(cycle_count) / real'(t_final - t_start), 
-                  sq_out_actual);
+                  sq_out_reduced);
 
          // Check correctness
-         if(sq_out_actual !== sq_out_expected) begin
+         if(sq_out_reduced !== sq_out_expected) begin
             $display("MISTATCH expected %x", sq_out_expected);
-            $display("           actual %x", sq_out_actual);
+            $display("           actual %x", sq_out_reduced);
             error_count = error_count + 1;
             break;
          end
