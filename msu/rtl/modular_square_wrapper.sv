@@ -23,7 +23,7 @@ module modular_square_wrapper
    #(
      parameter int MOD_LEN               = `MOD_LEN_DEF,
 
-     parameter int WORD_LEN              = 17,
+     parameter int WORD_LEN              = 16,
      parameter int REDUNDANT_ELEMENTS    = 2,
      parameter int NONREDUNDANT_ELEMENTS = MOD_LEN / WORD_LEN,
      parameter int NUM_ELEMENTS          = REDUNDANT_ELEMENTS +
@@ -41,7 +41,7 @@ module modular_square_wrapper
     output logic                   valid
    );
 
-   localparam int BIT_LEN               = 18;
+   localparam int BIT_LEN               = 17;
    localparam int IO_STAGES             = 3;
 
    logic               start_stages[IO_STAGES];
