@@ -95,19 +95,19 @@ module modular_square_wrapper
       end
    endgenerate
 
-   modular_square_1_cycle 
+   modular_square_2_cycle 
      #(
-         .NUM_ELEMENTS(62),
-         .BIT_LEN(18)     ,
-         .WORD_LEN(17)    
+         .NUM_ELEMENTS(66),
+         .BIT_LEN(17)     ,
+         .WORD_LEN(16)    
        )
    modsqr(
           .clk                (clk),
           .reset              (reset),
           .start              (start_stages[IO_STAGES-1]),
-          .A              (sq_in_stages[IO_STAGES-1]),
+          .sq_in              (sq_in_stages[IO_STAGES-1]),
           .sq_out             (sq_out_stages[0]),
-          .ms              (valid_stages[0])
+          .valid              (valid_stages[0])
           );
 
 endmodule
