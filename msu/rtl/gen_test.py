@@ -57,7 +57,7 @@ print("MOD_LEN = %d" % MOD_LEN)
 print("MODULUS = %d" % M)
 print(" bitlen = %d" % (M.bit_length()))
 
-f = open('test.txt', 'w')
+f = open('D:\\git\\vdf-fpga\\msu\\rtl\\test.txt', 'w')
 
 sq_in = 2
 f.write("%x\n" % sq_in)
@@ -75,12 +75,12 @@ def sqr(t_start, t_final, incr, sq_in):
 
 f.close()
 
-if gen_msuconfig:
-    f = open('msu.srcs/msuconfig.vh', 'w')
-    f.write("`define SIMPLE_SQ 1\n")
-    f.write("`define SQ_IN_BITS_DEF %d\n" % (MOD_LEN))
-    f.write("`define SQ_OUT_BITS_DEF %d\n" % (MOD_LEN))
-    f.write("`define MOD_LEN_DEF %d\n" % (MOD_LEN))
-    f.write("`define MODULUS_DEF %d'h%x\n" % (MOD_LEN, M))
-    f.close()
+#if gen_msuconfig:
+f = open('D:\\git\\vdf-fpga\\msu\\rtl\\msuconfig.vh', 'w')
+f.write("`define SIMPLE_SQ 1\n")
+f.write("`define SQ_IN_BITS_DEF %d\n" % (MOD_LEN))
+f.write("`define SQ_OUT_BITS_DEF %d\n" % (MOD_LEN))
+f.write("`define MOD_LEN_DEF %d\n" % (MOD_LEN))
+f.write("`define MODULUS_DEF %d'h%x\n" % (MOD_LEN, M))
+f.close()
 
