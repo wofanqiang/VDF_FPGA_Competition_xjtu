@@ -185,7 +185,7 @@ $(BINARY_CONTAINER_AWS): $(BINARY_CONTAINER)
 
 
 # Generate the LUTs. reduction_lut_000.dat will be present for any bitwidth.
-$(BINARY_CONTAINER_XO): mem/reduction_lut_000.dat
+#$(BINARY_CONTAINER_XO): mem/reduction_lut_000.dat
 $(BINARY_CONTAINER_XO): msuconfig.vh
 
 sdaccel.ini:
