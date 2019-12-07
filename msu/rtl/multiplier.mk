@@ -97,8 +97,8 @@ ifeq ($(SIMPLE_SQ), 1)
               >> msuconfig.vh
 endif
 
-mem/reduction_lut_000.dat: 
-	mkdir -p mem
-	cd mem && $(MODSQR_DIR)/rtl/gen_reduction_lut.py \
+#mem/reduction_lut_000.dat: 
+#	mkdir -p mem
+#	cd mem && $(MODSQR_DIR)/rtl/gen_reduction_lut.py \
                           --nonredundant $(NONREDUNDANT_ELEMENTS) \
                           --modulus $(MODULUS)
