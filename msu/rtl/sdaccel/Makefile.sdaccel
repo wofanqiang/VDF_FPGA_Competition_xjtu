@@ -44,11 +44,11 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_HighUtilSLRs}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-#                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_SpreadLogic_High}"
+                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_SpreadLogic_High}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={Explore}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-#                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
+                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE}=\
                    {AlternateFlowWithRetiming}"
