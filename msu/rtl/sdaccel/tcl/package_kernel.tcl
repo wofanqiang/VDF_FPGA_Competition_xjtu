@@ -35,7 +35,7 @@
 set root_path        ../../../..
 set msu_path         $root_path/msu/rtl
 set sdaccel_path     $root_path/msu/rtl/sdaccel
-set primitives_path  $root_path/primitives/rtl
+#set primitives_path  $root_path/primitives/rtl
 set modsqr_path      $root_path/modular_square/rtl
 
 set path_to_packaged       "./packaged_kernel_${suffix}"

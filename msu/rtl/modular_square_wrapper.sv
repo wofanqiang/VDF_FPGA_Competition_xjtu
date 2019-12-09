@@ -96,11 +96,6 @@ module modular_square_wrapper
    endgenerate
 
    modular_square_2_cycle 
-     #(
-         .NUM_ELEMENTS(66),
-         .BIT_LEN(17)     ,
-         .WORD_LEN(16)    
-       )
    modsqr(
           .clk                (clk),
           .reset              (reset),

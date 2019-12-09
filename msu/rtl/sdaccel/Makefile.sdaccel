@@ -41,21 +41,25 @@ LDCLFLAGS += -DMSU_SQ_OUT_BITS_DEF=$(SQ_OUT_BITS)
                    {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.OPT_DESIGN.ARGS.DIRECTIVE}={Explore}"
-LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
+#LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_HighUtilSLRs}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_SpreadLogic_High}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
-#LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
+                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={Explore}"
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
+#LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
+                   {STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE}=\
+                   {AlternateFlowWithRetiming}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE}=\
                    {AggressiveExplore}"
+				   
 
 # Vivado 2018.3
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-                   {STEPS.ROUTE_DESIGN.ARGS.DIRECTIVE}={Explore}"
+                   {STEPS.ROUTE_DESIGN.ARGS.DIRECTIVE}={AggressiveExplore}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.POST_ROUTE_PHYS_OPT_DESIGN.ARGS.DIRECTIVE}=\
                    {AggressiveExplore}"
@@ -63,8 +67,8 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 # Add in additional constraints, such as pblocks
 # This constraint places all performance critical logic in SLR2, which is
 # free of shell logic. 
-#PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
-#LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
+PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
                    $(PLACER_CONSTRS)"
 
 LDCLFLAGS += --kernel_frequency 100

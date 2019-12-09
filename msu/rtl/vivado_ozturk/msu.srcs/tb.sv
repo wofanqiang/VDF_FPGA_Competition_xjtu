@@ -21,8 +21,8 @@ module tb();
    //localparam integer MOD_LEN = 128;
 
    // Ozturk parameters
-   localparam integer WORD_LEN         = 17;
-   localparam integer BIT_LEN          = 18;
+   localparam integer WORD_LEN         = 16;
+   localparam integer BIT_LEN          = 17;
    localparam integer AXI_LEN          = 32;
    localparam integer SQ_IN_BITS       = `SQ_IN_BITS_DEF;
    localparam integer SQ_OUT_BITS      = `SQ_OUT_BITS_DEF;
