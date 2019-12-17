@@ -99,6 +99,3 @@ endif
 
 mem/reduction_lut_000.dat: 
 	mkdir -p mem
-	#cd mem && $(MODSQR_DIR)/rtl/gen_reduction_lut.py \
-                          --nonredundant $(NONREDUNDANT_ELEMENTS) \
-                          --modulus $(MODULUS)
