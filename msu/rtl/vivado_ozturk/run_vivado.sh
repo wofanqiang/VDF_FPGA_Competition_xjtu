@@ -35,7 +35,7 @@ DIRECT_TB=1 make -C ${OBJ} -f ../../multiplier.mk ${TARGETS}
 
 # Copy the ROM files into the src directory.
 cp     ${OBJ}/msuconfig.vh ${MODEL}.srcs
-cp -r  ${OBJ}/mem ${MODEL}.srcs
+#cp -r  ${OBJ}/mem ${MODEL}.srcs
 rm -fr ${OBJ}
 
 # Generate the Vivado project
