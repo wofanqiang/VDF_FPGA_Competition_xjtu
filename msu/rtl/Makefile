@@ -86,11 +86,11 @@ run: msuconfig.vh
 #ifeq ($(SIMPLE_SQ), 0)
 #	@echo
 #	@echo "-- GENERATE LUTs -----------------"
-#	mkdir -p obj_dir
+	mkdir -p obj_dir
 #	cd obj_dir && $(MODSQR_PATH)/gen_reduction_lut.py \
-#                          --nonredundant $(NONREDUNDANT_ELEMENTS) \
-#                          --modulus $(MODULUS)
-#endif
+                          --nonredundant $(NONREDUNDANT_ELEMENTS) \
+                          --modulus $(MODULUS)
+endif
 
 	@echo
 	@echo "-- VERILATE ----------------"

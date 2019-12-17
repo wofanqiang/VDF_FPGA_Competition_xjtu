@@ -29,7 +29,7 @@ rm -fr ${OBJ}
 mkdir -p ${OBJ}
 
 # Delete the any old files first to ensure they are up to date
-TARGETS="msuconfig.vh"
+TARGETS="msuconfig.vh mem/reduction_lut_000.dat"
 export MODSQR_DIR=../../../../../modular_square
 DIRECT_TB=1 make -C ${OBJ} -f ../../multiplier.mk ${TARGETS}
 
