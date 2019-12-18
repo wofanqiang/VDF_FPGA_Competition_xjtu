@@ -209,14 +209,12 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "${origin_dir}/msu.srcs/clk_wiz_0/clk_wiz_0.xci"] \
  [file normalize "${origin_dir}/../sdaccel/vdf_control_s_axi.v"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/modular_square_2_cycle.sv"] \
  [file normalize "${origin_dir}/../../../modular_square/rtl/xpb_lut.sv"] \
- [file normalize "${origin_dir}/../../../modular_square/rtl/cdc_sync_valid.sv"] \
  [file normalize "${origin_dir}/msu.srcs/msuconfig.vh"] \
  [file normalize "${origin_dir}/../msu.sv"] \
- [file normalize "${origin_dir}/../msu_cdc.sv"] \
+ [file normalize "${origin_dir}/../modular_square_wrapper.sv"] \
  [file normalize "${origin_dir}/../sdaccel/vdf_axi_read_master.sv"] \
  [file normalize "${origin_dir}/../sdaccel/vdf_axi_write_master.sv"] \
  [file normalize "${origin_dir}/../sdaccel/vdf_counter.sv"] \
@@ -227,27 +225,13 @@ set files [list \
 add_files -norecurse -fileset $obj $files
 
 # Set 'sources_1' fileset file properties for remote files
-set file "$origin_dir/msu.srcs/clk_wiz_0/clk_wiz_0.xci"
-set file [file normalize $file]
-set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
-set_property -name "generate_files_for_reference" -value "0" -objects $file_obj
-set_property -name "registered_with_manager" -value "1" -objects $file_obj
-if { ![get_property "is_locked" $file_obj] } {
-  set_property -name "synth_checkpoint_mode" -value "Singular" -objects $file_obj
-}
 
-set file "$origin_dir/../../../modular_square/rtl/modular_square_2_cycle.sv"
+set file "$origin_dir/../../../modular_square/rtl/modular_square_8_cycles.sv"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
 
 set file "$origin_dir/../../../modular_square/rtl/xpb_lut.sv"
-set file [file normalize $file]
-set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
-set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
-
-
-set file "$origin_dir/../../../modular_square/rtl/cdc_sync_valid.sv"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
@@ -258,11 +242,6 @@ set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "Verilog Header" -objects $file_obj
 
 set file "$origin_dir/../msu.sv"
-set file [file normalize $file]
-set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
-set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
-
-set file "$origin_dir/../msu_cdc.sv"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
@@ -291,11 +270,6 @@ set file "$origin_dir/../sdaccel/vdf_wrapper.sv"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
-
-set file "$origin_dir/msu.srcs/clk_wiz_0/clk_wiz_0.dcp"
-set file [file normalize $file]
-set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
-set_property -name "netlist_only" -value "0" -objects $file_obj
 
 
 # Set 'sources_1' fileset file properties for local files

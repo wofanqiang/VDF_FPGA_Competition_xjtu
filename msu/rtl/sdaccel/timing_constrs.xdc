@@ -1,19 +1,14 @@
-# Required for SDAccel
-set_property CLOCK_DEDICATED_ROUTE ANY_CMT_COLUMN [get_nets WRAPPER_INST/SH/kernel_clks_i/clkwiz_kernel_clk0/inst/CLK_CORE_DRP_I/clk_inst/clk_out1]
+#multi-cycle paths for sq_in_d and sq_out to sq_out
 
-# Designate clock crossings as false paths
-set_false_path -from [get_cells WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/reset_e4_reg__0]
-set_false_path -from [get_cells WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/valid_in_cdc/valid_in_pulse_reg]
-set_false_path -from [get_cells WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/valid_out_cdc/valid_in_pulse_reg]
-set_false_path -from [get_cells WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_in_e1_reg*]
-set_false_path -from [get_cells WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_out_i1_reg*]
+# CDC circuit paths
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_rst_cdc2_reg* }]      -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/rst_fb_cdc1_reg* }]      -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0 
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/rst_hold_reg* }]            -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_rst_cdc1_reg* }]   -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0 
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_start_cdc2_reg* }]    -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/start_fb_cdc1_reg* }]    -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0 
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/start_hold_reg* }]          -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_start_cdc1_reg* }] -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0 
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_valid_toggle_reg* }]  -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/modsq_valid_cdc1_reg* }] -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0 
 
-# sq_in and sq_out are multi-cycle paths
-# https://www.xilinx.com/video/hardware/setting-multicycle-path-exceptions.html
-set_multicycle_path 3 -from [get_cells {WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_in_e1_reg*}]
-set_multicycle_path 2 -from [get_cells {WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_in_e1_reg*}] -hold
-
-set_multicycle_path 3 -from [get_cells {WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_out_i1_reg*}]
-set_multicycle_path 2 -from [get_cells {WRAPPER_INST/CL/vdf_1/inst/inst_wrapper/inst_kernel/msu/modsqr/sq_out_i1_reg*}] -hold
+# sq  in/out ports (max delay)
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/sq_out_reg* }] -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/*sq_out_stages_reg[1]* }] -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0
+set_max_delay -from [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/*sq_in_stages_reg[2]* }] -filter {IS_CLOCK == true }] -to [get_pins -of_object [get_cells -hier -filter {IS_SEQUENTIAL == true && NAME =~ *modsqr*/sq_in_d1_reg* }] -filter {DIRECTION == IN && IS_CLOCK == false}] -datapath_only 8.0
 
 

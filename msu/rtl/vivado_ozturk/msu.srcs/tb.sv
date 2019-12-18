@@ -53,18 +53,17 @@ module tb();
    integer                 total_cycle_count;
    integer                 total_squarings;
    
-   msu_cdc
+   modular_square_wrapper
      #(
        .MOD_LEN(MOD_LEN)
        )
       uut(
           clk,
-          clk,
           reset,
           start,
           sq_in,
-          valid,
-          sq_out
+          sq_out,
+          valid
           );
    
    initial begin
@@ -90,7 +89,8 @@ module tb();
 
       @(negedge clk);
       @(negedge clk);
-      @(negedge clk);
+	  for( int kk = 0; kk < 150; kk++ ) // delay for 1.5usec untill pll starts
+	      @(negedge clk);
       @(negedge clk);
 
       reset      = 1'b0;

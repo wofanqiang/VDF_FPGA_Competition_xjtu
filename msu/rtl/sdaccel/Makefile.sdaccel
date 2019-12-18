@@ -36,11 +36,10 @@ LDCLFLAGS += -DMODULUS_DEF=$(MOD_LEN)\'d$(MODULUS)
 LDCLFLAGS += -DMSU_SQ_IN_BITS_DEF=$(SQ_IN_BITS)
 LDCLFLAGS += -DMSU_SQ_OUT_BITS_DEF=$(SQ_OUT_BITS)
 
+#LDCLFLAGS += -R2 
 
-#LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
-                   {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
 LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
-                   {STEPS.SYNTH_DESIGN.ARGS.RETIMING}={1}"
+                   {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.OPT_DESIGN.ARGS.DIRECTIVE}={Explore}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
@@ -48,7 +47,7 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={SSI_SpreadLogic_High}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
-                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraNetDelay_high}"
+                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
 #LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
@@ -66,12 +65,18 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 # This constraint places all performance critical logic in SLR2, which is
 # free of shell logic. 
 PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
-LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=$(PLACER_CONSTRS)"
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
+                   $(PLACER_CONSTRS)"
 
 LDCLFLAGS += --kernel_frequency 125
 
-TIMING_CONSTRS     = $(realpath ../timing_constrs.xdc)
-LDCLFLAGS += --xp "vivado_prop:run.impl_1.STEPS.OPT_DESIGN.TCL.POST=$(TIMING_CONSTRS)"
+#Add in Timing constraints
+TIMING_CONSTRS      = $(realpath ../timing_constrs.xdc)
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.STEPS.OPT_DESIGN.TCL.PRE=$(TIMING_CONSTRS)"
+
+#add in Post route tcl
+POST_ROUTE_TCL     = $(realpath ../update_pll.tcl)
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.STEPS.ROUTE_DESIGN.TCL.POST=$(POST_ROUTE_TCL)"
 
 ############################################################################
 # AWS/SDAccel configuration
@@ -147,7 +152,7 @@ BINARY_CONTAINER_AWS = vdf.$(TARGET).$(DSA).awsxclbin
 
 CP = cp -rf
 
-S3_BUCKET          = vdfsn
+S3_BUCKET          = eric-afi-bucket
 
 
 ############################################################################

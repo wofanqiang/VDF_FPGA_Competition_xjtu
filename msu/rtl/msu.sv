@@ -105,9 +105,6 @@ module msu
    logic [C_XFER_SIZE_WIDTH-1:0] axi_out_count;
    logic                         axi_in_shift;
 
-   // Generated clock for the squaring unit
-   logic clk_squarer;
-   logic locked, locked_d1, locked_d2, locked_d3, locked_d4;
 
    genvar                        gi;
    
@@ -117,19 +114,6 @@ module msu
       reset_1d <= reset;
    end
 
-   // Instantate the squaring unit clock generator
-   clk_wiz_0 squarer_mmcm(.clk_out1(clk_squarer),
-                          .reset(reset),
-                          .locked(locked),
-                          .clk_in1(clk));
-
-   // Clock the lock signal to allow time to propagate.
-   always_ff @(posedge clk) begin
-      locked_d1 <= locked;
-      locked_d2 <= locked_d1;
-      locked_d3 <= locked_d2;
-      locked_d4 <= locked_d3;
-   end
 
    //////////////////////////////////////////////////////////////////////
    // State machine
@@ -214,26 +198,28 @@ module msu
 
    assign sq_start                  = state == STATE_START;
    assign s_axis_xfer_size_in_bytes = (AXI_IN_COUNT*AXI_BYTES_PER_TXN);
-   assign s_axis_tready             = (state == STATE_RECV && locked_d4);
+   assign s_axis_tready             = (state == STATE_RECV);
    
    //////////////////////////////////////////////////////////////////////
    // Modsqr function
    //////////////////////////////////////////////////////////////////////
 
-   msu_cdc
+`ifdef SIMPLE_SQ
+   modular_square_simple
+`else
+   modular_square_wrapper
+`endif
      #(
        .MOD_LEN(SQ_IN_BITS)
        )
    modsqr
      (
-      .clk_ext            (clk),
-      .clk_int            (clk_squarer),
-      .reset              (reset || reset_1d || state == STATE_INIT ||
-                           !locked_d4),
-      .valid_in           (sq_start),
+      .clk                (clk),
+      .reset              (reset || reset_1d || state == STATE_INIT || state == STATE_PREPARE_SEND ),
+      .start              (sq_start),
       .sq_in              (sq_in),
-      .valid_out          (sq_finished),
-      .sq_out             (sq_out)
+      .sq_out             (sq_out),
+      .valid              (sq_finished)
       );
 
    //////////////////////////////////////////////////////////////////////
