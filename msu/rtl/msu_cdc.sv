@@ -240,10 +240,7 @@ module msu_cdc
    endgenerate
 
    // Instantiate the multiplier
-   modular_square_8_cycles 
-     #(
-       .NONREDUNDANT_ELEMENTS(NONREDUNDANT_ELEMENTS)
-       )
+   modular_square_2_cycle
    modsqr(
           .clk                (clk_int),
           .reset              (reset_i4),
