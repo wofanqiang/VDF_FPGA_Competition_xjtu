@@ -32,10 +32,6 @@ module modular_square_2_cycle
     logic [33:0] counter;
     logic reg_start;
     logic reg_valid;
-    logic reg_valid0;
-    logic reg_valid1;
-    logic [BIT_LEN-1:0] sq_out0[NUM_ELEMENTS];
-    logic [BIT_LEN-1:0] sq_out1[NUM_ELEMENTS];
 
     //logic [BIT_LEN-1:0] sq_in_initial[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] sq_in_current[NUM_ELEMENTS];
@@ -82,14 +78,6 @@ module modular_square_2_cycle
     always_comb begin
         sq_in_current = sq_out;
     end
-
-    //always_ff @(posedge clk) begin
-    //    sq_out1 <= sq_out0;
-    //    sq_out  <= sq_out1;
-    //    reg_valid0 <= reg_valid;
-    //    reg_valid1 <= reg_valid0;
-    //end
-
 
     always_ff @(posedge clk) begin
         if(reset) begin 
@@ -310,7 +298,7 @@ module modular_square_2_cycle
                 reg_valid   <= 1'b1;
                 sq_in_initial_0<=sq_in;
                 sq_in_initial_1<=sq_in_initial_0;
-                sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial_2<=sq_in_initial_1;
                 //sq_in_initial <= sq_in_initial_2;
                 sq_out      <= sq_out;
                 EN_S        <= 1'b1;
@@ -324,7 +312,7 @@ module modular_square_2_cycle
                 reg_valid   <= 1'b0;
                 sq_in_initial_0<=sq_in;
                 sq_in_initial_1<=sq_in_initial_0;
-                sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial_2<=sq_in_initial_1;
                 //sq_in_initial <= sq_in_initial_2;
                 sq_out      <= sq_in_initial_1;
                 EN_S        <= 1'b1;
@@ -674,15 +662,14 @@ module modular_square_2_cycle
     //        end
     //    end
     //end
-
-    always_comb begin
+always_comb begin
         u_S_temp1[NUM_ELEMENTS-1] = 0;
         u_S_temp1[NUM_ELEMENTS-2] = S[NUM_ELEMENTS-2];
         for(int i=0; i<NUM_ELEMENTS-2; i++)begin
-            u_S_temp1[i] = { {(EXTRA_BIT_XPB_0){1'b0}}, S[i]};
+            u_S_temp1[i] = S[i];
             for(int j=0; j < NUM_FLAG_LUT*3; j++)begin
                 //u_S_temp1[i] = u_S_temp1[i] + xpb_lut[j*3][i] + xpb_lut[j*3+1][i] + xpb_lut[j*3+2][i];
-                u_S_temp1[i] = u_S_temp1[i] + {{(EXTRA_BIT_XPB_0+1){1'b0}}, xpb_lut[j][i]};
+                u_S_temp1[i] = u_S_temp1[i] + xpb_lut[j][i];
             end
             
         end
@@ -696,16 +683,19 @@ module modular_square_2_cycle
 
     always_comb begin
         for (int i = 0; i < NUM_ELEMENTS; i++) begin:sum_xpb_temp_col
-            sum_xpb_temp[i] = { {(EXTRA_BIT_XPB- EXTRA_BIT_XPB_0+1){1'b0}}  ,S_temp1[i]};
+            sum_xpb_temp[i] = S_temp1[i];
             for (int j = 0; j < NUM_FLAG_MUL; j++) begin:sum_xpb_temp_row
                 if(i == 0)begin
-                    sum_xpb_temp[i] = sum_xpb_temp[i] + { {EXTRA_BIT_XPB{1'b0}}, mul_P_xpb_temp2[j][i]};
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i];
+                end
+                else if(i == NUM_ELEMENTS-2)begin
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i] + mul_P_xpb_temp3[j][i-1];
                 end
                 else if(i == NUM_ELEMENTS-1)begin
-                        sum_xpb_temp[i] = sum_xpb_temp[i] + {{EXTRA_BIT_XPB{1'b0}} ,mul_P_xpb_temp3[j][i-1]};
+                        sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp3[j][i-1];
                 end
                 else begin
-                    sum_xpb_temp[i] = sum_xpb_temp[i] + {{EXTRA_BIT_XPB{1'b0}}, mul_P_xpb_temp2[j][i]} + + {{EXTRA_BIT_XPB{1'b0}}, mul_P_xpb_temp3[j][i-1]};
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i] + + mul_P_xpb_temp3[j][i-1];
                 end
             end    
         end
