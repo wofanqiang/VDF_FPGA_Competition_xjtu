@@ -38,8 +38,6 @@ module modular_square_2_cycle
     logic [BIT_LEN-1:0] u_ms[NUM_ELEMENTS];
     (* max_fanout = 20 *) logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];
 
-    assign sq_out = sq_out_reg;
-
     //(* max_fanout = 20 *) logic [9:0] state_current;
     //(* max_fanout = 20 *) logic [9:0] state_next;
 
@@ -80,6 +78,7 @@ module modular_square_2_cycle
 
     always_comb begin
         sq_in_current = sq_out_reg;
+        sq_out = sq_out_reg;
     end
 
     always_ff @(posedge clk) begin
@@ -317,7 +316,7 @@ module modular_square_2_cycle
                 sq_in_initial_1<=sq_in_initial_0;
                 //sq_in_initial_2<=sq_in_initial_1;
                 //sq_in_initial <= sq_in_initial_2;
-                sq_out      <= sq_in_initial_1;
+                sq_out_reg      <= sq_in_initial_1;
                 EN_S        <= 1'b1;
                 for(int i=0; i<NUM_ELEMENTS*2; i++)begin:reset_S
                     S[i] <= 0;
