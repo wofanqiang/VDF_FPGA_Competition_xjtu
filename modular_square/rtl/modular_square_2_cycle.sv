@@ -13,14 +13,18 @@ module modular_square_2_cycle
     output logic [BIT_LEN-1:0] sq_out[NUM_ELEMENTS]
 );
 
-    localparam longint LOOPS = 2**33;
+localparam longint LOOPS = 2**33;
 
-    localparam IDLE         = 6'b000001;
-    localparam TRANS_DATA0  = 6'b000010;
-    localparam TRANS_DATA1  = 6'b000100;
-    localparam CALCULATE    = 6'b001000;
-    localparam REDUCTION    = 6'b010000;
-    localparam FINISH       = 6'b100000;
+    localparam IDLE          = 10'b0000000001;
+    localparam TRANS_DATA0   = 10'b0000000010;
+    localparam TRANS_DATA1   = 10'b0000000100;
+    localparam CALCULATE     = 10'b0000001000;
+    localparam REDUCTION     = 10'b0000010000;
+    localparam FINISH0       = 10'b0000100000;
+    localparam FINISH1       = 10'b0001000000;
+    localparam FINISH2       = 10'b0010000000;
+    localparam FINISH3       = 10'b0100000000;
+    localparam FINISH4       = 10'b1000000000;
 
 
     localparam XPB_SLICES   = 38;
@@ -29,6 +33,9 @@ module modular_square_2_cycle
     localparam BIT_LEN_XPB  = 27;
     localparam BIT_LEN_FLAG = 17;
 
+
+    localparam P = 1024'd124066695684124741398798927404814432744698427125735684128131855064976895337309138910015071214657674309443149407457493434579063840841220334555160125016331040933690674569571217337630239191517205721310197608387239846364360850220896772964978569683229449266819903414117058030106528073928633017118689826625594484331;
+
     logic [33:0] counter;
     logic reg_start;
     logic reg_valid;
@@ -36,14 +43,14 @@ module modular_square_2_cycle
     //logic [BIT_LEN-1:0] sq_in_initial[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] sq_in_current[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] u_ms[NUM_ELEMENTS];
-    (* max_fanout = 20 *) logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];
+    logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];
 
     //(* max_fanout = 20 *) logic [9:0] state_current;
     //(* max_fanout = 20 *) logic [9:0] state_next;
 
     (* max_fanout = 50 *) logic EN_S;
-    logic [5:0] state_current;
-    logic [5:0] state_next;
+    logic [9:0] state_current;
+    logic [9:0] state_next;
     //logic EN_S;
     
     logic [BIT_LEN-1:0] S[NUM_ELEMENTS*2];
@@ -62,7 +69,7 @@ module modular_square_2_cycle
     logic [BIT_LEN_A-1:0] mul_A_square[NUM_MUL];
     logic [BIT_LEN_B-1:0] mul_B_square[NUM_MUL];
     //logic [BIT_LEN_A+BIT_LEN_B-1:0] mul_P_square[NUM_MUL];
-    logic [BIT_LEN*2-1:0] mul_P_square[NUM_ELEMENTS][NUM_ELEMENTS];
+    logic [BIT_LEN*2-1:0] mul_P_square[NUM_ELEMENTS*NUM_ELEMENTS];
     
     logic [BIT_LEN-1:0] S_temp[NUM_ELEMENTS*2];
 
@@ -72,9 +79,96 @@ module modular_square_2_cycle
     //logic [BIT_LEN_A+BIT_LEN_B-1:0] mul_P_xpb[NUM_MUL];
     logic [XPB_SLICES-1:0][BIT_LEN_XPB+BIT_LEN_FLAG-1:0] mul_P_xpb[NUM_FLAG_MUL];
     
+    logic finish_flag;
 
     
     assign valid = reg_valid;
+
+
+    localparam EXTRA_BIT_XPB_1 = $clog2(6+1);
+
+    logic [BIT_LEN-1:0] S_temp2[NUM_ELEMENTS];
+    logic [BIT_LEN+EXTRA_BIT_XPB_1-1:0] u_S_temp2[NUM_ELEMENTS];
+    logic [NUM_ELEMENTS-3:0][WORD_LEN-1:0] final_xpb0[6];
+
+    xpb_lut_final u_xpb_lut_final0(.flag(sq_out_reg[NUM_ELEMENTS-2:NUM_ELEMENTS-1]), .xpb(final_xpb0));
+
+    always_comb begin
+        u_S_temp2[NUM_ELEMENTS-1] = 0;
+        u_S_temp2[NUM_ELEMENTS-2] = 0;
+        for(int i=0; i<NUM_ELEMENTS-2; i++)begin
+            u_S_temp2[i] = sq_out_reg[i];
+            for(int j=0; j < 6; j++)begin
+                u_S_temp2[i] = u_S_temp2[i] + final_xpb0[j][i];
+            end
+        end
+    end
+
+    always_comb begin
+        S_temp2[NUM_ELEMENTS-1] = 0;
+        for (int i = 0; i < NUM_ELEMENTS-1; i++) begin
+            if (i == 0) begin
+                S_temp2[i] = u_S_temp2[i][WORD_LEN-1:0];
+            end else begin
+                S_temp2[i] = u_S_temp2[i][WORD_LEN-1:0] + u_S_temp2[i-1][WORD_LEN+EXTRA_BIT_XPB_1-1:WORD_LEN];
+            end
+        end
+    end
+
+
+
+
+
+
+    logic [NUM_ELEMENTS*WORD_LEN-1:0]my_ms[2];
+    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0]actual_ms_temp0;
+    logic [BIT_LEN-1:0] actual_ms_temp1[NUM_ELEMENTS];
+    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0]actual_ms_temp2;
+    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0]actual_ms_temp3;
+    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0]actual_ms_temp3_reg0;
+    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0]actual_ms_temp3_reg1;
+    logic [BIT_LEN-1:0] actual_ms_temp4[NUM_ELEMENTS];
+
+    always_comb begin
+        for (int i=0; i<NUM_ELEMENTS; i++) begin
+            my_ms[0][i*WORD_LEN +: WORD_LEN] = sq_out_reg[i][WORD_LEN-1:0];
+            my_ms[1][i*WORD_LEN +: WORD_LEN] = {{(WORD_LEN-1){1'b0}}, sq_out_reg[i][WORD_LEN]};
+        end
+    end
+
+    assign actual_ms_temp0 = my_ms[0] + (my_ms[1]<<WORD_LEN);
+
+    
+
+    always_comb begin
+        for (int i=0; i<NUM_ELEMENTS; i++) begin
+            actual_ms_temp1[i] = {1'b0, actual_ms_temp0[i]};
+        end
+    end
+
+    always_comb begin
+        for (int i=0; i<NUM_ELEMENTS; i++) begin
+            actual_ms_temp2[i] = sq_out_reg[i];
+        end
+    end
+
+    assign actual_ms_temp3 = actual_ms_temp2 - P;
+
+    assign finish_flag = actual_ms_temp3[NUM_ELEMENTS-2][2];
+
+    always_ff@(posedge clk)begin
+        actual_ms_temp3_reg0 <= actual_ms_temp3;
+        actual_ms_temp3_reg1 <= actual_ms_temp3_reg0;
+    end
+
+    always_comb begin
+        for (int i=0; i<NUM_ELEMENTS; i++) begin
+            actual_ms_temp4[i] = {1'b0, actual_ms_temp3_reg0[i]};
+        end
+    end
+    
+
+
 
     always_comb begin
         sq_in_current = sq_out_reg;
@@ -140,10 +234,32 @@ module modular_square_2_cycle
         REDUCTION:
             begin 
                 if(counter < LOOPS) state_next <= CALCULATE;
-                else state_next <= FINISH;
+                else state_next <= FINISH0;
             end
 
-        FINISH: 
+        FINISH0: 
+            begin
+                state_next <= FINISH1;
+            end
+
+        FINISH1: 
+            begin
+                state_next <= FINISH2;
+            end
+
+        FINISH2: 
+            begin
+                state_next <= FINISH3;
+            end
+        FINISH3: 
+            begin
+                if(finish_flag == 1'b1)
+                    state_next <= FINISH4;
+                else
+                    state_next <= FINISH3;
+            end
+        
+        FINISH4: 
             begin
                 state_next <= IDLE;
             end
@@ -283,7 +399,7 @@ module modular_square_2_cycle
             begin 
                 counter     <= counter + 1'b1;
                 reg_start   <= reg_start;
-                reg_valid   <= 1'b1;
+                reg_valid   <= (counter < LOOPS-1)? 1'b1 : 1'b0;
                 sq_in_initial_0<=sq_in;
                 sq_in_initial_1<=sq_in_initial_0;
                 //sq_in_initial_2<=sq_in_initial_1;
@@ -293,7 +409,62 @@ module modular_square_2_cycle
                 S           <= S;
             end
 
-        FINISH: 
+        FINISH0: 
+            begin
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_in_initial_0<=sq_in;
+                sq_in_initial_1<=sq_in_initial_0;
+                //sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial <= sq_in_initial_2;
+                sq_out_reg      <= S_temp2;
+                EN_S        <= 1'b1;
+                S           <= S;
+            end
+
+        FINISH1: 
+            begin
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_in_initial_0<=sq_in;
+                sq_in_initial_1<=sq_in_initial_0;
+                //sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial <= sq_in_initial_2;
+                sq_out_reg      <= S_temp2;
+                EN_S        <= 1'b1;
+                S           <= S;
+            end
+
+        FINISH2: 
+            begin
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_in_initial_0<=sq_in;
+                sq_in_initial_1<=sq_in_initial_0;
+                //sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial <= sq_in_initial_2;
+                sq_out_reg      <= actual_ms_temp1;
+                EN_S        <= 1'b1;
+                S           <= S;
+            end
+        FINISH3: 
+            begin
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_in_initial_0<=sq_in;
+                sq_in_initial_1<=sq_in_initial_0;
+                //sq_in_initial_2<=sq_in_initial_1;
+                //sq_in_initial <= sq_in_initial_2;
+                sq_out_reg      <= actual_ms_temp4;
+                EN_S        <= 1'b1;
+                S           <= S;
+            end
+        
+        FINISH4: 
             begin
                 counter     <= counter;
                 reg_start   <= reg_start;
@@ -324,8 +495,6 @@ module modular_square_2_cycle
             end
         endcase
     end
-
-
 
 
     
@@ -378,83 +547,70 @@ module modular_square_2_cycle
         automatic int mul_i = 0;//乘法器索引(必须为'automatic',不然会出错)
         //用A的值对乘法器的输入赋值
         for(int i=0; i<NUM_ELEMENTS; i++)begin:square_input_array_A
-            for(int j=0; j<NUM_ELEMENTS; j++)begin:square_input_array_B
-                if(j >= i) begin
-                    //如果乘法器位宽变化，此处需要修改
-                    mul_A_square[mul_i] = {{(BIT_LEN_A-BIT_LEN){1'b0}} , sq_in_current[i]};
-                    mul_B_square[mul_i] = sq_in_current[j];
-                    //保存用乘法器的输出
-                    mul_P_square[i][j] = mul_P[mul_i][BIT_LEN*2-1:0];
-                    mul_i = mul_i + 1;
-                end
-                else begin
-                    //保存重复项
-                    mul_P_square[i][j] = mul_P_square[j][i];
-                end
+            for(int j=i; j<NUM_ELEMENTS; j++)begin:square_input_array_B
+                //如果乘法器位宽变化，此处需要修改
+                mul_A_square[mul_i] = {{(BIT_LEN_A-BIT_LEN){1'b0}} , sq_in_current[i]};
+                mul_B_square[mul_i] = sq_in_current[j];
+                //保存用乘法器的输出
+                mul_P_square[(NUM_ELEMENTS*i)+j] = mul_P[mul_i][BIT_LEN*2-1:0];
+                mul_i = mul_i + 1;
+                //else begin
+                //    //保存重复项
+                //    mul_P_square[i][j] = mul_P_square[j][i];
+                //end
             end
         end
     end
 
+    logic [25:0]     grid[NUM_ELEMENTS*2][NUM_ELEMENTS*2]; 
 
-    localparam GRID_PP_BIT = BIT_LEN*2 + EXTRA_BIT;
-    //整理部分积矩阵，列队齐
-    logic[GRID_PP_BIT-1:0]  grid_pp[NUM_ELEMENTS*2][NUM_ELEMENTS];
-
+    //int ii, jj;
     always_comb begin
-        for(int c = 0; c < NUM_ELEMENTS*2; c++)begin:grid_pp_col
-	        for(int r = 0; r < NUM_ELEMENTS; r++)begin:grid_pp_row
-                grid_pp[c][r] = 0;
-            end
-        end
+       for (int ii=0; ii<NUM_ELEMENTS*2; ii++) begin:gg0 // Y
+          for (int jj=0; jj<NUM_ELEMENTS*2; jj++) begin :gg1// X
+             grid[ii][jj] = 0;
+          end
+       end
 
-        for(int i = 0; i < NUM_ELEMENTS; i++)begin:grid_pp_set_value_row
-	        for(int j = 0; j < NUM_ELEMENTS; j++)begin:grid_pp_set_value_col
-                grid_pp[j+i][i] = {{(EXTRA_BIT){1'b0}}, mul_P_square[j][i]};
-	        end
-	    end
+       for (int ii=0; ii<NUM_ELEMENTS; ii++) begin : grid_row // Y
+          for (int jj=ii; jj<NUM_ELEMENTS; jj++) begin : grid_col // X
+             if( jj == ii ) begin // diagonal cases are used as is
+                 grid[(ii+jj)][(2*ii)]       = {{EXTRA_BIT{ 1'b0}},       mul_P_square[(NUM_ELEMENTS*ii)+jj][WORD_LEN-1       :0       ]};
+                 grid[(ii+jj+1)][((2*ii)+1)] = {{(EXTRA_BIT){1'b0}}, mul_P_square[(NUM_ELEMENTS*ii)+jj][(2*BIT_LEN)-1:WORD_LEN]};
+             end else begin // all non diagonal cases are doubled
+                 grid[(ii+jj)][(2*ii)]       = {{(EXTRA_BIT){ 1'b0}},       mul_P_square[(NUM_ELEMENTS*ii)+jj][WORD_LEN-2       :0         ], 1'b0};
+                 grid[(ii+jj+1)][((2*ii)+1)] = {{(EXTRA_BIT-1){1'b0}},      mul_P_square[(NUM_ELEMENTS*ii)+jj][(2*BIT_LEN)-1:WORD_LEN-1]};
+             end
+
+          end
+       end
     end
 
+    logic [WORD_LEN+EXTRA_BIT-1:0]  mid_sum[NUM_ELEMENTS*2];
 
-
-   
-
-    logic[GRID_PP_BIT-1:0]  pp_c[NUM_ELEMENTS*2];
-    logic[GRID_PP_BIT-1:0]  pp_s[NUM_ELEMENTS*2];
-
-
-    //以列为单位进行3:2压缩。
-    genvar gp_i;
+    genvar i;
     generate
-        for(gp_i=0; gp_i<NUM_ELEMENTS*2; gp_i++)begin:grid_pp_compressor_tree_col
-            compressor_tree_3_to_2
-                #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(GRID_PP_BIT))
-                u_compressor_tree_3_to_2_grid_pp
-                (
-                    .terms(grid_pp[gp_i]),
-                    .C(pp_c[gp_i]),
-                    .S(pp_s[gp_i])
-                );
+      // The first and last columns have only one entry, return in S
+        always_comb begin
+          
+          mid_sum[0][WORD_LEN + EXTRA_BIT-1:0]                  = grid[0][0][WORD_LEN + EXTRA_BIT-1:0];
+          mid_sum[(NUM_ELEMENTS*2)-1][WORD_LEN + EXTRA_BIT-1:0] = grid[(NUM_ELEMENTS*2)-1][(NUM_ELEMENTS*2)-1][WORD_LEN + EXTRA_BIT-1:0];
         end
-    endgenerate
-
-
-    logic[GRID_PP_BIT-1:0]  M_temp[NUM_ELEMENTS*2];
-
-
-    always_comb begin
-        for (int i = 0; i < NUM_ELEMENTS*2; i++) begin
-            M_temp[i] = pp_c[i] + pp_s[i];
+    
+        for (i=1; i<(NUM_ELEMENTS*2)-1; i=i+1) begin : col_sums
+          localparam integer CUR_ELEMENTS = (i <  NUM_ELEMENTS) ? (i+1) : NUM_ELEMENTS*2 - i;
+          localparam integer GRID_INDEX   = (i <  NUM_ELEMENTS) ? 0 : ((i - NUM_ELEMENTS)*2+1);
+    
+          adder_tree_2_to_1 #(.NUM_ELEMENTS(CUR_ELEMENTS),
+                                    .BIT_LEN(WORD_LEN + EXTRA_BIT)
+                                   )
+              adder_tree_2_to_1 (
+                 .terms(grid[i][GRID_INDEX:(GRID_INDEX + CUR_ELEMENTS - 1)]),
+                 .S(mid_sum[i])
+              );
+    
         end
-    end   
-
-    always_comb begin
-        S_temp[0] = M_temp[0][WORD_LEN-1:0];
-        S_temp[1] = M_temp[1][WORD_LEN-1:0] + M_temp[0][WORD_LEN*2-1:WORD_LEN];
-        S_temp[NUM_ELEMENTS*2-1] = M_temp[NUM_ELEMENTS*2-1][BIT_LEN-1:0] + M_temp[NUM_ELEMENTS*2-2][WORD_LEN*2-1:WORD_LEN] + M_temp[NUM_ELEMENTS*2-3][GRID_PP_BIT-1:WORD_LEN*2];
-        for (int i = 2; i < NUM_ELEMENTS*2-1; i++) begin
-            S_temp[i] = M_temp[i][WORD_LEN-1:0] + M_temp[i-1][WORD_LEN*2-1:WORD_LEN] + M_temp[i-2][GRID_PP_BIT-1:WORD_LEN*2];
-        end
-    end
+   endgenerate
 
 
 //----------------------------------------------------------------------------
@@ -479,7 +635,15 @@ module modular_square_2_cycle
 
 
 
-
+    always_comb begin
+        for (int i = 0; i < NUM_ELEMENTS*2; i++) begin:S_temp_col
+            if (i == 0) begin
+                S_temp[i] = mid_sum[i][WORD_LEN-1:0];
+            end else begin
+                S_temp[i] = mid_sum[i][WORD_LEN-1:0] + mid_sum[i-1][WORD_LEN+EXTRA_BIT-1:WORD_LEN];
+            end
+        end
+    end
 //----------------------------------------------------------------------------
 
 
@@ -637,83 +801,80 @@ module modular_square_2_cycle
         end
     end
 
-    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0] mul_P_xpb_temp2[NUM_FLAG_MUL];
-    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0] mul_P_xpb_temp3[NUM_FLAG_MUL];
-    logic [NUM_ELEMENTS-1:0][WORD_LEN-1:0] lut_xpb_temp0[NUM_FLAG_LUT*3];
-
-    logic [BIT_LEN-1:0] S_xpb_temp0[NUM_ELEMENTS];
+    logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] mul_P_xpb_temp2[NUM_FLAG_MUL];
+    logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] mul_P_xpb_temp3[NUM_FLAG_MUL];
 
     always_comb begin
-        for(int i=0; i<NUM_FLAG_MUL; i++)begin:format_mul_P_xpb_temp0
-            mul_P_xpb_temp2[i] = {{((NUM_ELEMENTS)*WORD_LEN-XPB_SLICES*BIT_LEN_XPB){1'b0}}, mul_P_xpb_temp0[i]};
-            mul_P_xpb_temp3[i] = {{((NUM_ELEMENTS)*WORD_LEN-XPB_SLICES*BIT_LEN_XPB-(BIT_LEN_XPB-WORD_LEN)){1'b0}}, mul_P_xpb_temp1[i], {(BIT_LEN_XPB){1'b0}}};
+        for(int i=0; i<NUM_FLAG_MUL; i++)begin:format_mul_P_xpb_temp
+            mul_P_xpb_temp2[i] = {{((NUM_ELEMENTS-1)*WORD_LEN-XPB_SLICES*BIT_LEN_XPB){1'b0}}, mul_P_xpb_temp0[i]};
+            mul_P_xpb_temp3[i] = {{((NUM_ELEMENTS-1)*WORD_LEN-XPB_SLICES*BIT_LEN_XPB-(BIT_LEN_XPB-WORD_LEN)){1'b0}}, mul_P_xpb_temp1[i], {(BIT_LEN_XPB-WORD_LEN){1'b0}}};
         end
-
-        for(int i=0; i<NUM_FLAG_LUT*3; i++)begin:format_mul_P_xpb_temp1
-            lut_xpb_temp0[i] = {{(2*WORD_LEN){1'b0}}, xpb_lut[i]};
-        end
-
-        S_xpb_temp0[NUM_ELEMENTS-1] = 0;
-        for(int i=0; i<NUM_ELEMENTS-1; i++)begin:format_mul_P_xpb_temp1
-            S_xpb_temp0[i] = {{(2*WORD_LEN){1'b0}}, S[i]};
-        end
-
     end
 
-    
 
 
+    localparam EXTRA_BIT_XPB = $clog2(NUM_FLAG_MUL*2 + NUM_FLAG_LUT*3 +1)+2;
 
-    localparam EXTRA_BIT_XPB = $clog2(NUM_FLAG_MUL*2 + NUM_FLAG_LUT*3 +1);
+    localparam EXTRA_BIT_XPB_0 = $clog2(NUM_FLAG_LUT*3 +1)+2;
 
     logic [WORD_LEN+EXTRA_BIT_XPB-1:0] sum_xpb_temp[NUM_ELEMENTS];
 
-    logic [WORD_LEN+EXTRA_BIT_XPB-1:0] grid_xpb[NUM_ELEMENTS][NUM_FLAG_MUL*2 + NUM_FLAG_LUT*3 + 1];
 
+    logic [BIT_LEN+EXTRA_BIT_XPB_0-1:0] S_temp1[NUM_ELEMENTS];
+    logic [BIT_LEN+EXTRA_BIT_XPB_0-1:0] u_S_temp1[NUM_ELEMENTS];
 
+    //always_comb begin
+    //    for(int i=0; i<NUM_ELEMENTS; i++)begin
+    //        if(i == NUM_ELEMENTS-1)begin
+    //            S_temp1[i] = 0;
+    //        end
+    //        else begin
+    //            S_temp1[i] = S[i];
+    //        end
+    //    end
+    //end
     always_comb begin
-        for(int c = 0; c < NUM_ELEMENTS; c++)begin:grid_xpb_col
-	        for(int r = 0; r < NUM_FLAG_MUL*2 + NUM_FLAG_LUT*3 + 1; r++)begin:grid_xpb_row
-                grid_xpb[c][r] = 0;
+        u_S_temp1[NUM_ELEMENTS-1] = 0;
+        u_S_temp1[NUM_ELEMENTS-2] = S[NUM_ELEMENTS-2];
+        for(int i=0; i<NUM_ELEMENTS-2; i++)begin
+            u_S_temp1[i] = S[i];
+            for(int j=0; j < NUM_FLAG_LUT*3; j++)begin
+                //u_S_temp1[i] = u_S_temp1[i] + xpb_lut[j*3][i] + xpb_lut[j*3+1][i] + xpb_lut[j*3+2][i];
+                u_S_temp1[i] = u_S_temp1[i] + xpb_lut[j][i];
             end
+            
         end
-        for(int j = 0; j < NUM_ELEMENTS; j++)begin:grid_xpb_set_value_col 
-            grid_xpb[j][0] = {{(EXTRA_BIT_XPB){1'b0}}, S_xpb_temp0[j]};
-            for(int i = 0; i < NUM_FLAG_LUT*3; i++)begin:grid_xpb_set_value_row0
-                grid_xpb[j][i+1] = {{(EXTRA_BIT_XPB){1'b0}}, lut_xpb_temp0[i][j]};
-            end
-            for(int i = 0; i < NUM_FLAG_MUL; i++)begin:grid_xpb_set_value_row1
-                grid_xpb[j][i+NUM_FLAG_LUT*3+1] = {{(EXTRA_BIT_XPB){1'b0}}, mul_P_xpb_temp2[i][j]};
-            end
-            for(int i = 0; i < NUM_FLAG_MUL; i++)begin:grid_xpb_set_value_row2
-                grid_xpb[j][i+NUM_FLAG_MUL+NUM_FLAG_LUT*3+1] = {{(EXTRA_BIT_XPB){1'b0}}, mul_P_xpb_temp3[i][j]};
-            end
-	    end
     end
 
-    logic [WORD_LEN+EXTRA_BIT_XPB-1:0] xpb_c[NUM_ELEMENTS];
-    logic [WORD_LEN+EXTRA_BIT_XPB-1:0] xpb_s[NUM_ELEMENTS];
+    assign S_temp1 = u_S_temp1;
+    //always_ff@(posedge clk)begin
+    //    S_temp1 <= u_S_temp1;
+    //end
 
-    genvar gpb_i;
-    generate
-        for(gpb_i=0; gpb_i<NUM_ELEMENTS; gpb_i++)begin:grid_xpb_compressor_tree_col
-            compressor_tree_3_to_2
-                #(.NUM_ELEMENTS(NUM_FLAG_MUL*2 + NUM_FLAG_LUT*3 + 1), .BIT_LEN(WORD_LEN+EXTRA_BIT_XPB))
-                u_compressor_tree_3_to_2_grid_xpb
-                (
-                    .terms(grid_xpb[gpb_i]),
-                    .C(xpb_c[gpb_i]),
-                    .S(xpb_s[gpb_i])
-                );
-        end
-    endgenerate
 
     always_comb begin
-        for (int i = 0; i < NUM_ELEMENTS; i++) begin
-            sum_xpb_temp[i] = xpb_c[i] + xpb_s[i];
+        for (int i = 0; i < NUM_ELEMENTS; i++) begin:sum_xpb_temp_col
+            sum_xpb_temp[i] = S_temp1[i];
+            for (int j = 0; j < NUM_FLAG_MUL; j++) begin:sum_xpb_temp_row
+                if(i == 0)begin
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i];
+                end
+                else if(i == NUM_ELEMENTS-2)begin
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i] + mul_P_xpb_temp3[j][i-1];
+                end
+                else if(i == NUM_ELEMENTS-1)begin
+                        sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp3[j][i-1];
+                end
+                else begin
+                    sum_xpb_temp[i] = sum_xpb_temp[i] + mul_P_xpb_temp2[j][i] + + mul_P_xpb_temp3[j][i-1];
+                end
+            end    
         end
-    end   
+    end
 
+
+
+  
     always_comb begin
         for (int i = 0; i < NUM_ELEMENTS; i++) begin:MS_cols
             if (i == 0) begin
@@ -754,242 +915,67 @@ module multiplier
 endmodule
 
 
-module carry_save_adder_tree_level
+module adder_tree_2_to_1
+   #(
+     parameter int NUM_ELEMENTS      = 9,
+     parameter int BIT_LEN           = 16
+    )
+   (
+    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
+    output logic [BIT_LEN-1:0] S
+   );
+
+
+   generate
+      if (NUM_ELEMENTS == 1) begin // Return value
+         always_comb begin
+            S[BIT_LEN-1:0] = terms[0];
+         end
+      end else if (NUM_ELEMENTS == 2) begin // Return value
+         always_comb begin
+            S[BIT_LEN-1:0] = terms[0] + terms[1];
+         end
+      end else begin
+         localparam integer NUM_RESULTS = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2);
+         logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
+
+         adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
+                            .BIT_LEN(BIT_LEN)
+         ) adder_tree_level (
+                            .terms(terms),
+                            .results(next_level_terms)
+         );
+
+         adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_RESULTS),
+                                  .BIT_LEN(BIT_LEN)
+         ) adder_tree_2_to_1 (
+                                  .terms(next_level_terms),
+                                  .S(S)
+         );
+      end
+   endgenerate
+endmodule
+
+
+module adder_tree_level
    #(
      parameter int NUM_ELEMENTS = 3,
      parameter int BIT_LEN      = 19,
 
-     parameter int NUM_RESULTS  = (integer'(NUM_ELEMENTS/3) * 2) + 
-                                   (NUM_ELEMENTS%3)
+     parameter int NUM_RESULTS  = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2)
     )
    (
     input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
     output logic [BIT_LEN-1:0] results[NUM_RESULTS]
    );
 
-   genvar i;
-   generate
-      for (i=0; i<(NUM_ELEMENTS / 3); i++) begin : csa_insts
-         // Add three consecutive terms 
-         carry_save_adder #(.BIT_LEN(BIT_LEN))
-            carry_save_adder (
-                              .A(terms[i*3]),
-                              .B(terms[(i*3)+1]),
-                              .Cin(terms[(i*3)+2]),
-                              .Cout({results[i*2][0],
-                                     results[i*2][BIT_LEN-1:1]}),
-                              .S(results[(i*2)+1][BIT_LEN-1:0])
-                             );
+   always_comb begin
+      for (int i=0; i<(NUM_ELEMENTS / 2); i++) begin
+         results[i] = terms[i*2] + terms[i*2+1];
       end
 
-      // Save any unused terms for the next level 
-      for (i=0; i<(NUM_ELEMENTS % 3); i++) begin : csa_level_extras
-         always_comb begin
-            results[(NUM_RESULTS - 1) - i][BIT_LEN-1:0] = 
-               terms[(NUM_ELEMENTS- 1) - i][BIT_LEN-1:0];
-         end
+      if( NUM_ELEMENTS % 2 == 1 ) begin
+         results[NUM_RESULTS-1] = terms[NUM_ELEMENTS-1];
       end
-   endgenerate
-endmodule
-
-
-
-module compressor_tree_3_to_2
-   #(
-    parameter int NUM_ELEMENTS      = 9,
-    parameter int BIT_LEN           = 16
-    )
-   (
-    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
-    output logic [BIT_LEN-1:0] C,
-    output logic [BIT_LEN-1:0] S
-   );
-
-`ifdef FASTSIM
-   // This is intended for simulation only to improve compile and run time
-    always_comb begin
-        C = 0;
-        S = 0;
-        for(int k = 0; k < NUM_ELEMENTS; k++) begin
-             S += terms[k];
-        end
-    end
-   
-`else
-
-   // If there is only one or two elements, then return the input (no tree)
-   // If there are three elements, this is the last level in the tree
-   // For greater than three elements:
-   //   Instantiate a set of carry save adders to process this level's terms
-   //   Recursive instantiate this module to complete the rest of the tree
-    generate
-        if (NUM_ELEMENTS == 1) begin // Return value
-            always_comb begin
-               C[BIT_LEN-1:0] = '0;
-               S[BIT_LEN-1:0] = terms[0];
-            end
-        end
-        else if (NUM_ELEMENTS == 2) begin // Return value
-            always_comb begin
-               C[BIT_LEN-1:0] = terms[1];
-               S[BIT_LEN-1:0] = terms[0];
-            end
-        end
-        else if (NUM_ELEMENTS == 3) begin // last level
-           /* verilator lint_off UNUSED */
-            logic [BIT_LEN-1:0] Cout;
-           /* verilator lint_on UNUSED */
-
-            carry_save_adder #(.BIT_LEN(BIT_LEN))
-                carry_save_adder (
-                                .A(terms[0]),
-                                .B(terms[1]),
-                                .Cin(terms[2]),
-                                .Cout(Cout),
-                               .S(S[BIT_LEN-1:0])
-                               );
-            always_comb begin
-               C[BIT_LEN-1:0] = {Cout[BIT_LEN-2:0], 1'b0};
-            end
-        end
-        else begin
-           //localparam integer NUM_RESULTS = ($rtoi($floor(NUM_ELEMENTS/3)) * 2) + 
-           //                                 (NUM_ELEMENTS%3);
-            localparam integer NUM_RESULTS = (integer'(NUM_ELEMENTS/3) * 2) + 
-                                             (NUM_ELEMENTS%3);
-
-            logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
-
-            carry_save_adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
-                                         .BIT_LEN(BIT_LEN)
-                                        )
-                carry_save_adder_tree_level (
-                                           .terms(terms),
-                                           .results(next_level_terms)
-                                          );
-
-            compressor_tree_3_to_2 #(.NUM_ELEMENTS(NUM_RESULTS),
-                                    .BIT_LEN(BIT_LEN)
-                                   )
-                compressor_tree_3_to_2 (
-                                      .terms(next_level_terms),
-                                      .C(C),
-                                      .S(S)
-                                     );
-        end
-    endgenerate
-`endif
-endmodule
-
-/*******************************************************************************
-  Copyright 2019 Supranational LLC
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*******************************************************************************/
-
-/*    
-  A parameterized carry save adder (CSA)
-  Loops through each input bit and feeds a full adder (FA)
-             --------------------------------
-            | CSA                            |
-            |         for each i in BIT_LEN  |
-            |            -------             |
-            |           | FA    |            |
-  A[]   --> |  Ai   --> |       | --> Si     | --> S[]
-  B[]   --> |  Bi   --> |       |            |
-  Cin[] --> |  Cini --> |       | --> Couti  | --> Cout[]
-            |            -------             |
-             --------------------------------
-*/
-
-module carry_save_adder
-   #(
-    parameter int BIT_LEN = 19
-    )
-   (
-    input  logic [BIT_LEN-1:0] A,
-    input  logic [BIT_LEN-1:0] B,
-    input  logic [BIT_LEN-1:0] Cin,
-    output logic [BIT_LEN-1:0] Cout,
-    output logic [BIT_LEN-1:0] S
-   );
-
-    genvar i;
-    generate
-        for (i=0; i<BIT_LEN; i++) begin : csa_fas
-            full_adder full_adder(
-                                 .A(A[i]),
-                                 .B(B[i]),
-                                 .Cin(Cin[i]),
-                                 .Cout(Cout[i]),
-                                 .S(S[i])
-                                );
-        end
-    endgenerate
-endmodule
-
-
-
-/*******************************************************************************
-  Copyright 2019 Supranational LLC
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*******************************************************************************/
-
-/*
-  A basic 1-bit full adder
-              -------
-             | FA    |
-    A    --> |       | --> S
-    B    --> |       |
-    Cin  --> |       | --> Cout
-              -------
-*/
-
-module full_adder
-   (
-    input  logic A,
-    input  logic B,
-    input  logic Cin,
-    output logic Cout,
-    output logic S
-   );
-
-    //always_comb begin
-    //   S    =  A ^ B ^ Cin;
-    //   Cout = (A & B) | (Cin & (A ^ B));
-    //end
-
-	always_comb begin
-    	case({A,B,Cin})
-    		3'b000 : {Cout, S} = 2'd0;
-    		3'b001 : {Cout, S} = 2'd1;
-    		3'b010 : {Cout, S} = 2'd1;
-    		3'b011 : {Cout, S} = 2'd2;
-    		3'b100 : {Cout, S} = 2'd1;
-    		3'b101 : {Cout, S} = 2'd2;
-    		3'b110 : {Cout, S} = 2'd2;
-    		3'b111 : {Cout, S} = 2'd3;
-    	endcase
-	end
+   end
 endmodule
