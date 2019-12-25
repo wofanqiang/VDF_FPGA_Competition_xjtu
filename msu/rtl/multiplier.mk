@@ -30,7 +30,7 @@ endif
 DIRECT_TB             ?= 0
 
 # Constants for the Ozturk multiplier
-REDUNDANT_ELEMENTS     = 2
+REDUNDANT_ELEMENTS     = 1
 NONREDUNDANT_ELEMENTS ?= $(shell expr $(MOD_LEN) \/ $(WORD_LEN))
 NUM_ELEMENTS           = $(shell expr $(NONREDUNDANT_ELEMENTS) \+ \
 	                              $(REDUNDANT_ELEMENTS))
@@ -98,4 +98,6 @@ ifeq ($(SIMPLE_SQ), 1)
 endif
 
 mem/reduction_lut_000.dat: 
-	mkdir -p mem
+	# mkdir -p mem
+	# cd mem && 
+	$(MODSQR_DIR)/rtl/gen_reduction_lut.py
