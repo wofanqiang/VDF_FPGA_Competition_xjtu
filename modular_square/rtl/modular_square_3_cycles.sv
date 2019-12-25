@@ -362,9 +362,9 @@ module reduction_low
 
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
-            xpb_low_temp0[i] = S_l[i] + xpb_high_sum[i];
+            xpb_low_temp0[i] = { {(EXTRA_BIT_XPB_L-1){1'b0}},S_l[i]} + { {(EXTRA_BIT_XPB_L){1'b0}}, xpb_high_sum[i]};
             for(int j=0; j < NUM_FLAG*3; j++)begin
-                xpb_low_temp0[i] = xpb_low_temp0[i] + xpb_low[j][i];
+                xpb_low_temp0[i] = xpb_low_temp0[i] + { {(EXTRA_BIT_XPB_L){1'b0}}, xpb_low[j][i]};
             end
         end
     end
@@ -413,9 +413,9 @@ module reduction_high
 
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
-            xpb_high_temp0[i] = xpb_high[0][i];
+            xpb_high_temp0[i] = { {(EXTRA_BIT_XPB_H){1'b0}},xpb_high[0][i]};
             for(int j=1; j < (NUM_ELEMENTS+1)*3; j++)begin
-                xpb_high_temp0[i] = xpb_high_temp0[i] + xpb_high[j][i];
+                xpb_high_temp0[i] = xpb_high_temp0[i] + { {(EXTRA_BIT_XPB_H){1'b0}}, xpb_high[j][i]};
             end
         end
     end
