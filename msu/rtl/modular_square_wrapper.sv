@@ -24,7 +24,7 @@ module modular_square_wrapper
      parameter int MOD_LEN               = `MOD_LEN_DEF,
 
      parameter int WORD_LEN              = 16,
-     parameter int REDUNDANT_ELEMENTS    = 2,
+     parameter int REDUNDANT_ELEMENTS    = 1,
      parameter int NONREDUNDANT_ELEMENTS = MOD_LEN / WORD_LEN,
      parameter int NUM_ELEMENTS          = REDUNDANT_ELEMENTS +
                                            NONREDUNDANT_ELEMENTS,
