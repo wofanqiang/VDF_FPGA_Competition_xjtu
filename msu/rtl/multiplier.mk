@@ -98,6 +98,6 @@ ifeq ($(SIMPLE_SQ), 1)
 endif
 
 mem/reduction_lut_000.dat: 
-	# mkdir -p mem
+	mkdir -p mem
 	# cd mem && 
-	$(MODSQR_DIR)/rtl/gen_reduction_lut.py
+	#$(MODSQR_DIR)/rtl/gen_reduction_lut.py
