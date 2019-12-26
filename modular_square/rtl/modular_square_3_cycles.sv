@@ -15,14 +15,13 @@ module modular_square_3_cycles
 
     localparam longint LOOPS = 2**33;
 
-    localparam IDLE         = 8'b00000001;
-    localparam TRANS_DATA   = 8'b00000010;
-    localparam CALCULATE    = 8'b00000100;
-    localparam REDUCTION    = 8'b00001000;
-    localparam FINISH0      = 8'b00010000;
-    localparam FINISH1      = 8'b00100000;
-    localparam FINISH2      = 8'b01000000;
-    localparam FINISH3      = 8'b10000000;
+    localparam IDLE         = 7'b0000001;
+    localparam TRANS_DATA   = 7'b0000010;
+    localparam CALCULATE    = 7'b0000100;
+    localparam FINISH0      = 7'b0001000;
+    localparam FINISH1      = 7'b0010000;
+    localparam FINISH2      = 7'b0100000;
+    localparam FINISH3      = 7'b1000000;
 							
 	localparam P = 1024'd124066695684124741398798927404814432744698427125735684128131855064976895337309138910015071214657674309443149407457493434579063840841220334555160125016331040933690674569571217337630239191517205721310197608387239846364360850220896772964978569683229449266819903414117058030106528073928633017118689826625594484331;
 
@@ -35,8 +34,8 @@ module modular_square_3_cycles
     logic [BIT_LEN-1:0] sq_in_current[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];	
 
-    logic [7:0] state_current;
-    logic [7:0] state_next;
+    logic [6:0] state_current;
+    logic [6:0] state_next;
     logic finish_flag;
 
     logic [BIT_LEN-1:0] u_mid_sum[NUM_ELEMENTS];
@@ -90,11 +89,7 @@ module modular_square_3_cycles
                 state_next <= CALCULATE;
             end
         
-        CALCULATE: 
-            begin
-                state_next <= REDUCTION;
-            end
-        REDUCTION:
+        CALCULATE:
             begin 
                 if(counter < LOOPS+1) state_next <= CALCULATE;
                 else state_next <= FINISH0;
@@ -148,17 +143,8 @@ module modular_square_3_cycles
                 sq_out_reg  <= sq_in;
                 flag_h      <= 1'b1;
             end
-
-        CALCULATE: 
-            begin
-                counter     <= counter;
-                reg_start   <= reg_start;
-                reg_valid   <= 1'b0;
-                sq_out_reg  <= sq_out_reg;
-                flag_h      <= 1'b0;
-            end
         
-        REDUCTION:
+        CALCULATE:
             begin 
                 counter     <= counter + 1'b1;
                 reg_start   <= reg_start;
@@ -283,10 +269,6 @@ module modular_square_3_cycles
     alu_array #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
         u_alu_array (.sq_in(sq_out_reg), .flag_h(flag_h), .S_h(u_S_h), .S_l(u_S_l));
 
-    always_ff@(posedge clk)begin
-        reg_S_h <= u_S_h;
-        //reg_S_l <= u_S_l;
-    end
 
     
 
@@ -294,11 +276,8 @@ module modular_square_3_cycles
     logic [BIT_LEN-1:0] reg_xpb_high_sum[NUM_ELEMENTS];
 
     reduction_high #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_high(.S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
+        u_reduction_high(.S_h(u_S_h), .xpb_high_sum(u_xpb_high_sum));
 
-    //always_ff@(posedge clk)begin
-    //    reg_xpb_high_sum <= u_xpb_high_sum;
-    //end
 
     
 
@@ -398,11 +377,9 @@ module reduction_high
 
     localparam EXTRA_BIT_XPB_H = $clog2((NUM_ELEMENTS+1)*3);
 
-    
 
     logic [EXTRA_BIT_XPB_H+WORD_LEN-1:0] xpb_high_temp0[NUM_ELEMENTS-1];
-
-
+    
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
             xpb_high_temp0[i] = { {(EXTRA_BIT_XPB_H){1'b0}},xpb_high[0][i]};
@@ -476,27 +453,35 @@ module alu_array
 
     logic [BIT_LEN-1:0] u_alu_A[NUM_ELEMENTS][NUM_MULS];
     logic [BIT_LEN-1:0] u_alu_B[NUM_ELEMENTS][NUM_MULS];
-    logic [ALU_OUT-1:0] u_alu_S[NUM_ELEMENTS];
+    logic [ALU_OUT-1:0] u_alu_S_h[NUM_ELEMENTS-1];
+    logic [ALU_OUT-1:0] u_alu_S_l[NUM_ELEMENTS];
 
-    always_comb begin
-        u_alu_A = flag_h? A_high: A_low;
-        u_alu_B = flag_h? B_high: B_low;
-    end
 
-    genvar k;
+
+    genvar h;
     generate
-        for(k=0; k < NUM_ELEMENTS; k++)begin
-            localparam NUM_RESULTS = integer'((k+1)/2) + ((k+1)%2);
-            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(k+1))
-                u_alu_col (.A(u_alu_A[k][0:NUM_RESULTS-1]),.B(u_alu_B[k][0:NUM_RESULTS-1]),.S(u_alu_S[k]));
+        for(h=0; h < NUM_ELEMENTS-1; h++)begin
+            localparam NUM_RESULTS = integer'((h+1)/2) + ((h+1)%2);
+            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(h+1))
+                u_alu_col_h (.A(A_high[h][0:NUM_RESULTS-1]),.B(B_high[h][0:NUM_RESULTS-1]),.S(u_alu_S_h[h]));
+        end
+    endgenerate
+
+
+    genvar l;
+    generate
+        for(l=0; l < NUM_ELEMENTS; l++)begin
+            localparam NUM_RESULTS = integer'((l+1)/2) + ((l+1)%2);
+            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(l+1))
+                u_alu_col_l (.A(A_low[l][0:NUM_RESULTS-1]),.B(B_low[l][0:NUM_RESULTS-1]),.S(u_alu_S_l[l]));
         end
     endgenerate
     
 
     always_comb begin
-        S_low = u_alu_S;
-        for(int i=1; i<NUM_ELEMENTS; i++)begin
-            S_high[i-1] = u_alu_S[NUM_ELEMENTS-1-i];
+        S_low = u_alu_S_l;
+        for(int i=0; i<NUM_ELEMENTS-1; i++)begin
+            S_high[i] = u_alu_S_h[NUM_ELEMENTS-2-i];
         end
     end
 
