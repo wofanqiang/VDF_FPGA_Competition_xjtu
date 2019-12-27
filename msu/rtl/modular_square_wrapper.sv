@@ -95,7 +95,7 @@ module modular_square_wrapper
       end
    endgenerate
 
-   modular_square_3_cycles 
+   modular_square_1_cycle
    modsqr(
           .clk                (clk),
           .reset              (reset),
