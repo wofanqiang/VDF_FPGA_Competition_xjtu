@@ -613,6 +613,7 @@ endmodule
 
 
 
+
 module alu_col
 #(
     parameter NUM_ELEMENTS          = 66,
@@ -671,13 +672,12 @@ module alu_col
 
     logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_sum;
 
-    adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_IN),
-                        .BIT_LEN(BIT_LEN*2 + EXTRA_BITS))
-        adder_tree_2_to_1 
-            (
-                .terms(pp_grid),
-                .S(pp_sum)
-            );
+    always_comb begin
+        pp_sum = pp_grid[0];
+        for(int i=1; i< NUM_IN; i++)begin
+            pp_sum = pp_sum + pp_grid[i];
+        end
+    end
 
     assign S = pp_sum;
 
@@ -700,72 +700,4 @@ module dsp_multiplier
     always_comb begin
         P[MUL_OUT_BIT_LEN-1:0] = A[BIT_LEN_A-1:0] * B[BIT_LEN_B-1:0];
     end
-endmodule
-
-
-
-(* use_dsp="no" *)
-module adder_tree_2_to_1
-   #(
-     parameter int NUM_ELEMENTS      = 9,
-     parameter int BIT_LEN           = 16
-    )
-   (
-    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
-    output logic [BIT_LEN-1:0] S
-   );
-
-
-    generate
-        if (NUM_ELEMENTS == 1) begin // Return value
-            always_comb begin
-               S[BIT_LEN-1:0] = terms[0];
-            end
-        end else if (NUM_ELEMENTS == 2) begin // Return value
-            always_comb begin
-               S[BIT_LEN-1:0] = terms[0] + terms[1];
-            end
-        end else begin
-            localparam integer NUM_RESULTS = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2);
-            logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
-
-            adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
-                              .BIT_LEN(BIT_LEN)
-            ) adder_tree_level (
-                               .terms(terms),
-                               .results(next_level_terms)
-            );
-
-            adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_RESULTS),
-                                     .BIT_LEN(BIT_LEN)
-            ) adder_tree_2_to_1 (
-                                     .terms(next_level_terms),
-                                     .S(S)
-            );
-        end
-    endgenerate
-endmodule
-
-
-module adder_tree_level
-   #(
-     parameter int NUM_ELEMENTS = 3,
-     parameter int BIT_LEN      = 19,
-
-     parameter int NUM_RESULTS  = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2)
-    )
-   (
-    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
-    output logic [BIT_LEN-1:0] results[NUM_RESULTS]
-   );
-
-   always_comb begin
-      for (int i=0; i<(NUM_ELEMENTS / 2); i++) begin
-         results[i] = terms[i*2] + terms[i*2+1];
-      end
-
-      if( NUM_ELEMENTS % 2 == 1 ) begin
-         results[NUM_RESULTS-1] = terms[NUM_ELEMENTS-1];
-      end
-   end
 endmodule
