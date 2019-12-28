@@ -284,7 +284,7 @@ module modular_square_2_cycles
         u_alu_array (.sq_in(sq_out_reg), .flag_h(flag_h), .S_h(u_S_h), .S_l(u_S_l));
 
     always_ff@(posedge clk)begin
-        reg_S_h <= u_S_h;
+        //reg_S_h <= u_S_h;
         //reg_S_l <= u_S_l;
     end
 
@@ -294,7 +294,7 @@ module modular_square_2_cycles
     logic [BIT_LEN-1:0] reg_xpb_high_sum[NUM_ELEMENTS];
 
     reduction_high #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_high(.S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
+        u_reduction_high(.clk(clk), .S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
 
     //always_ff@(posedge clk)begin
     //    reg_xpb_high_sum <= u_xpb_high_sum;
@@ -348,7 +348,6 @@ module reduction_low
 
     logic [EXTRA_BIT_XPB_L+BIT_LEN-1:0] xpb_low_temp0[NUM_ELEMENTS-1];
 
-
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
             xpb_low_temp0[i] = { {(EXTRA_BIT_XPB_L-1){1'b0}},S_l[i]} + { {(EXTRA_BIT_XPB_L){1'b0}}, xpb_high_sum[i]};
@@ -386,14 +385,19 @@ module reduction_high
     parameter WORD_LEN              = 16
 )
 (
+    input logic clk,
     input logic [BIT_LEN-1:0] S_h[NUM_ELEMENTS+1],
-
     output logic [BIT_LEN-1:0] xpb_high_sum[NUM_ELEMENTS]
 );
 
+    logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] u_xpb_high[(NUM_ELEMENTS+1)*3];
     logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] xpb_high[(NUM_ELEMENTS+1)*3];
 
-    xpb_lut_high u_xpb_lut_high(.flag(S_h), .xpb(xpb_high));
+    xpb_lut_high u_xpb_lut_high(.flag(S_h), .xpb(u_xpb_high));
+
+    always_ff@(posedge clk)begin
+        xpb_high <= u_xpb_high;
+    end
 
 
     localparam EXTRA_BIT_XPB_H = $clog2((NUM_ELEMENTS+1)*3);
@@ -401,7 +405,6 @@ module reduction_high
     
 
     logic [EXTRA_BIT_XPB_H+WORD_LEN-1:0] xpb_high_temp0[NUM_ELEMENTS-1];
-
 
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
@@ -471,6 +474,13 @@ module alu_array
             u_sel_low(.sq_in(sq_in), .A_low(A_low[j]), .B_low(B_low[j]));
         end
     endgenerate
+
+    always_comb begin
+        for(int i=0; i<NUM_MULS; i++)begin
+            B_high[NUM_ELEMENTS-1][i] = 17'h0;
+            A_high[NUM_ELEMENTS-1][i] = 17'h0;
+        end
+    end
 
     
 
@@ -611,9 +621,6 @@ endmodule
 
 
 
-
-
-
 module alu_col
 #(
     parameter NUM_ELEMENTS          = 66,
@@ -672,12 +679,13 @@ module alu_col
 
     logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_sum;
 
-    always_comb begin
-        pp_sum = pp_grid[0];
-        for(int i=1; i< NUM_IN; i++)begin
-            pp_sum = pp_sum + pp_grid[i];
-        end
-    end
+    adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_IN),
+                        .BIT_LEN(BIT_LEN*2 + EXTRA_BITS))
+        adder_tree_2_to_1 
+            (
+                .terms(pp_grid),
+                .S(pp_sum)
+            );
 
     assign S = pp_sum;
 
@@ -700,4 +708,71 @@ module dsp_multiplier
     always_comb begin
         P[MUL_OUT_BIT_LEN-1:0] = A[BIT_LEN_A-1:0] * B[BIT_LEN_B-1:0];
     end
+endmodule
+
+
+(* use_dsp="no" *)
+module adder_tree_2_to_1
+   #(
+     parameter int NUM_ELEMENTS      = 9,
+     parameter int BIT_LEN           = 16
+    )
+   (
+    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
+    output logic [BIT_LEN-1:0] S
+   );
+
+
+    generate
+        if (NUM_ELEMENTS == 1) begin // Return value
+            always_comb begin
+               S[BIT_LEN-1:0] = terms[0];
+            end
+        end else if (NUM_ELEMENTS == 2) begin // Return value
+            always_comb begin
+               S[BIT_LEN-1:0] = terms[0] + terms[1];
+            end
+        end else begin
+            localparam integer NUM_RESULTS = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2);
+            logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
+
+            adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
+                              .BIT_LEN(BIT_LEN)
+            ) adder_tree_level (
+                               .terms(terms),
+                               .results(next_level_terms)
+            );
+
+            adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_RESULTS),
+                                     .BIT_LEN(BIT_LEN)
+            ) adder_tree_2_to_1 (
+                                     .terms(next_level_terms),
+                                     .S(S)
+            );
+        end
+    endgenerate
+endmodule
+
+
+module adder_tree_level
+   #(
+     parameter int NUM_ELEMENTS = 3,
+     parameter int BIT_LEN      = 19,
+
+     parameter int NUM_RESULTS  = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2)
+    )
+   (
+    input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
+    output logic [BIT_LEN-1:0] results[NUM_RESULTS]
+   );
+
+   always_comb begin
+      for (int i=0; i<(NUM_ELEMENTS / 2); i++) begin
+         results[i] = terms[i*2] + terms[i*2+1];
+      end
+
+      if( NUM_ELEMENTS % 2 == 1 ) begin
+         results[NUM_RESULTS-1] = terms[NUM_ELEMENTS-1];
+      end
+   end
 endmodule
