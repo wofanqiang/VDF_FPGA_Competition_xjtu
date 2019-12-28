@@ -1,4 +1,4 @@
-module modular_square_3_cycles
+module modular_square_2_cycles
 #(
     parameter NUM_ELEMENTS          = 65,
     parameter BIT_LEN               = 17,
