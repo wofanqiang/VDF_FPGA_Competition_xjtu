@@ -68,8 +68,8 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 # Add in additional constraints, such as pblocks
 # This constraint places all performance critical logic in SLR2, which is
 # free of shell logic. 
-#PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
-#LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
+PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
                    $(PLACER_CONSTRS)"
 
 LDCLFLAGS += --kernel_frequency 125
