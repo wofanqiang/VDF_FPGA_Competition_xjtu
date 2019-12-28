@@ -1,4 +1,4 @@
-module modular_square_2_cycles
+module modular_square_3_cycles
 #(
     parameter NUM_ELEMENTS          = 65,
     parameter BIT_LEN               = 17,
@@ -15,14 +15,15 @@ module modular_square_2_cycles
 
     localparam longint LOOPS = 2**33;
 
-    localparam IDLE         = 8'b00000001;
-    localparam TRANS_DATA   = 8'b00000010;
-    localparam CALCULATE    = 8'b00000100;
-    localparam REDUCTION    = 8'b00001000;
-    localparam FINISH0      = 8'b00010000;
-    localparam FINISH1      = 8'b00100000;
-    localparam FINISH2      = 8'b01000000;
-    localparam FINISH3      = 8'b10000000;
+    localparam IDLE         = 9'b000000001;
+    localparam TRANS_DATA   = 9'b000000010;
+    localparam CALCULATE0   = 9'b000000100;
+    localparam CALCULATE1   = 9'b000001000;
+    localparam REDUCTION    = 9'b000010000;
+    localparam FINISH0      = 9'b000100000;
+    localparam FINISH1      = 9'b001000000;
+    localparam FINISH2      = 9'b010000000;
+    localparam FINISH3      = 9'b100000000;
 							
 	localparam P = 1024'd124066695684124741398798927404814432744698427125735684128131855064976895337309138910015071214657674309443149407457493434579063840841220334555160125016331040933690674569571217337630239191517205721310197608387239846364360850220896772964978569683229449266819903414117058030106528073928633017118689826625594484331;
 
@@ -35,8 +36,8 @@ module modular_square_2_cycles
     logic [BIT_LEN-1:0] sq_in_current[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];	
 
-    logic [7:0] state_current;
-    logic [7:0] state_next;
+    logic [8:0] state_current;
+    logic [8:0] state_next;
     logic finish_flag;
 
     logic [BIT_LEN-1:0] u_mid_sum[NUM_ELEMENTS];
@@ -87,16 +88,20 @@ module modular_square_2_cycles
 
         TRANS_DATA: 
             begin
-                state_next <= CALCULATE;
+                state_next <= CALCULATE0;
             end
         
-        CALCULATE: 
+        CALCULATE0: 
             begin
+                state_next <= CALCULATE1;
+            end
+        CALCULATE1:
+            begin 
                 state_next <= REDUCTION;
             end
         REDUCTION:
             begin 
-                if(counter < LOOPS+1) state_next <= CALCULATE;
+                if(counter < LOOPS+1) state_next <= CALCULATE0;
                 else state_next <= FINISH0;
             end
 
@@ -149,13 +154,22 @@ module modular_square_2_cycles
                 flag_h      <= 1'b1;
             end
 
-        CALCULATE: 
+        CALCULATE0: 
             begin
                 counter     <= counter;
                 reg_start   <= reg_start;
                 reg_valid   <= 1'b0;
                 sq_out_reg  <= sq_out_reg;
                 flag_h      <= 1'b0;
+            end
+
+        CALCULATE1:
+            begin 
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_out_reg  <= sq_out_reg;
+                flag_h      <= 1'b1;
             end
         
         REDUCTION:
@@ -284,8 +298,8 @@ module modular_square_2_cycles
         u_alu_array (.sq_in(sq_out_reg), .flag_h(flag_h), .S_h(u_S_h), .S_l(u_S_l));
 
     always_ff@(posedge clk)begin
-        //reg_S_h <= u_S_h;
-        //reg_S_l <= u_S_l;
+        reg_S_h <= u_S_h;
+        reg_S_l <= u_S_l;
     end
 
     
@@ -294,16 +308,16 @@ module modular_square_2_cycles
     logic [BIT_LEN-1:0] reg_xpb_high_sum[NUM_ELEMENTS];
 
     reduction_high #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_high(.clk(clk), .S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
+        u_reduction_high(.S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
 
-    //always_ff@(posedge clk)begin
-    //    reg_xpb_high_sum <= u_xpb_high_sum;
-    //end
+    always_ff@(posedge clk)begin
+        reg_xpb_high_sum <= u_xpb_high_sum;
+    end
 
     
 
     reduction_low #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_low(.S_l(u_S_l), .xpb_high_sum(u_xpb_high_sum), .mid_sum(u_mid_sum));
+        u_reduction_low(.S_l(reg_S_l), .xpb_high_sum(reg_xpb_high_sum), .mid_sum(u_mid_sum));
     
 
     		
@@ -385,27 +399,30 @@ module reduction_high
     parameter WORD_LEN              = 16
 )
 (
-    input logic clk,
     input logic [BIT_LEN-1:0] S_h[NUM_ELEMENTS+1],
+
     output logic [BIT_LEN-1:0] xpb_high_sum[NUM_ELEMENTS]
 );
 
-    logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] u_xpb_high[(NUM_ELEMENTS+1)*3];
     logic [NUM_ELEMENTS-2:0][WORD_LEN-1:0] xpb_high[(NUM_ELEMENTS+1)*3];
 
-    xpb_lut_high u_xpb_lut_high(.flag(S_h), .xpb(u_xpb_high));
-
-    always_ff@(posedge clk)begin
-        xpb_high <= u_xpb_high;
-    end
+    xpb_lut_high u_xpb_lut_high(.flag(S_h), .xpb(xpb_high));
 
 
     localparam EXTRA_BIT_XPB_H = $clog2((NUM_ELEMENTS+1)*3);
 
-    
+    logic [EXTRA_BIT_XPB_H+WORD_LEN-1:0] grid_xpb_high[NUM_ELEMENTS-1][(NUM_ELEMENTS+1)*3];
+
+    always_comb begin
+        for(int i=0; i <NUM_ELEMENTS; i++)begin
+            for(int j=0; j<(NUM_ELEMENTS+1)*3; j++)begin
+                grid_xpb_high[i][j] = xpb_high[j][i];
+            end
+        end
+    end
 
     logic [EXTRA_BIT_XPB_H+WORD_LEN-1:0] xpb_high_temp0[NUM_ELEMENTS-1];
-
+    
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
             xpb_high_temp0[i] = { {(EXTRA_BIT_XPB_H){1'b0}},xpb_high[0][i]};
@@ -474,13 +491,6 @@ module alu_array
             u_sel_low(.sq_in(sq_in), .A_low(A_low[j]), .B_low(B_low[j]));
         end
     endgenerate
-
-    always_comb begin
-        for(int i=0; i<NUM_MULS; i++)begin
-            B_high[NUM_ELEMENTS-1][i] = 17'h0;
-            A_high[NUM_ELEMENTS-1][i] = 17'h0;
-        end
-    end
 
     
 
@@ -621,6 +631,8 @@ endmodule
 
 
 
+
+
 module alu_col
 #(
     parameter NUM_ELEMENTS          = 66,
@@ -679,6 +691,12 @@ module alu_col
 
     logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_sum;
 
+    //always_comb begin
+    //    pp_sum = pp_grid[0];
+    //    for(int i=1; i< NUM_IN; i++)begin
+    //        pp_sum = pp_sum + pp_grid[i];
+    //    end
+    //end
     adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_IN),
                         .BIT_LEN(BIT_LEN*2 + EXTRA_BITS))
         adder_tree_2_to_1 
