@@ -98,7 +98,7 @@ module modular_square_wrapper
       end
    endgenerate
 
-   modular_square_1_cycle
+   modular_square_2_cycles
    modsqr(
           .clk                ( modsq_clk ),
           .reset              ( modsq_rst ),
@@ -179,7 +179,7 @@ MMCME4_BASE #(
        .CLKIN1_PERIOD    ( 8.000  ), 
        .DIVCLK_DIVIDE    ( 1      ),   
        .CLKFBOUT_MULT_F  ( 8.000  ),
-       .CLKOUT0_DIVIDE_F ( 26.000 ),
+       .CLKOUT0_DIVIDE_F ( 13.000 ),
        .CLKOUT1_DIVIDE   ( 20     ),
        .CLKOUT2_DIVIDE   ( 20     ),
        .CLKOUT3_DIVIDE   ( 20     ),

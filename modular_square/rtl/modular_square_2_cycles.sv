@@ -1,4 +1,4 @@
-module modular_square_1_cycle
+module modular_square_2_cycles
 #(
     parameter NUM_ELEMENTS          = 65,
     parameter BIT_LEN               = 17,
@@ -15,13 +15,14 @@ module modular_square_1_cycle
 
     localparam longint LOOPS = 2**33;
 
-    localparam IDLE         = 7'b0000001;
-    localparam TRANS_DATA   = 7'b0000010;
-    localparam CALCULATE    = 7'b0000100;
-    localparam FINISH0      = 7'b0001000;
-    localparam FINISH1      = 7'b0010000;
-    localparam FINISH2      = 7'b0100000;
-    localparam FINISH3      = 7'b1000000;
+    localparam IDLE         = 8'b00000001;
+    localparam TRANS_DATA   = 8'b00000010;
+    localparam CALCULATE    = 8'b00000100;
+    localparam REDUCTION    = 8'b00001000;
+    localparam FINISH0      = 8'b00010000;
+    localparam FINISH1      = 8'b00100000;
+    localparam FINISH2      = 8'b01000000;
+    localparam FINISH3      = 8'b10000000;
 							
 	localparam P = 1024'd124066695684124741398798927404814432744698427125735684128131855064976895337309138910015071214657674309443149407457493434579063840841220334555160125016331040933690674569571217337630239191517205721310197608387239846364360850220896772964978569683229449266819903414117058030106528073928633017118689826625594484331;
 
@@ -34,8 +35,8 @@ module modular_square_1_cycle
     logic [BIT_LEN-1:0] sq_in_current[NUM_ELEMENTS];
     logic [BIT_LEN-1:0] sq_out_reg[NUM_ELEMENTS];	
 
-    logic [6:0] state_current;
-    logic [6:0] state_next;
+    logic [7:0] state_current;
+    logic [7:0] state_next;
     logic finish_flag;
 
     logic [BIT_LEN-1:0] u_mid_sum[NUM_ELEMENTS];
@@ -89,7 +90,11 @@ module modular_square_1_cycle
                 state_next <= CALCULATE;
             end
         
-        CALCULATE:
+        CALCULATE: 
+            begin
+                state_next <= REDUCTION;
+            end
+        REDUCTION:
             begin 
                 if(counter < LOOPS+1) state_next <= CALCULATE;
                 else state_next <= FINISH0;
@@ -143,8 +148,17 @@ module modular_square_1_cycle
                 sq_out_reg  <= sq_in;
                 flag_h      <= 1'b1;
             end
+
+        CALCULATE: 
+            begin
+                counter     <= counter;
+                reg_start   <= reg_start;
+                reg_valid   <= 1'b0;
+                sq_out_reg  <= sq_out_reg;
+                flag_h      <= 1'b0;
+            end
         
-        CALCULATE:
+        REDUCTION:
             begin 
                 counter     <= counter + 1'b1;
                 reg_start   <= reg_start;
@@ -269,6 +283,10 @@ module modular_square_1_cycle
     alu_array #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
         u_alu_array (.sq_in(sq_out_reg), .flag_h(flag_h), .S_h(u_S_h), .S_l(u_S_l));
 
+    always_ff@(posedge clk)begin
+        reg_S_h <= u_S_h;
+        reg_S_l <= u_S_l;
+    end
 
     
 
@@ -276,13 +294,16 @@ module modular_square_1_cycle
     logic [BIT_LEN-1:0] reg_xpb_high_sum[NUM_ELEMENTS];
 
     reduction_high #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_high(.S_h(u_S_h), .xpb_high_sum(u_xpb_high_sum));
+        u_reduction_high(.S_h(reg_S_h), .xpb_high_sum(u_xpb_high_sum));
 
+    //always_ff@(posedge clk)begin
+    //    reg_xpb_high_sum <= u_xpb_high_sum;
+    //end
 
     
 
     reduction_low #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_low(.S_l(u_S_l), .xpb_high_sum(u_xpb_high_sum), .mid_sum(u_mid_sum));
+        u_reduction_low(.S_l(reg_S_l), .xpb_high_sum(u_xpb_high_sum), .mid_sum(u_mid_sum));
     
 
     		
