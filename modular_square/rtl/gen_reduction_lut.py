@@ -4,7 +4,25 @@ def gen_retuction_lut(file_name, p, num_low, num_high, num_final, step):
     pb = (2 ** 1024 - p)
     pbh = (2**1024-p)* (2**(16*(1)))
     #temp_pb = pb % p
-    data = """module xpb_lut_low
+    data = """
+/*******************************************************************************
+  Copyright 2019 xjtu
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  *******************************************************************************/
+    """
+    data = data + '\n\n\n'
+    data = data + """module xpb_lut_low
 (
     input logic [16:0] flag[%(num_flag)d],
     output logic [1023:0] xpb[%(num_xpb)d]
