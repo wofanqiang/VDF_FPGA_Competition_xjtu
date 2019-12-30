@@ -285,7 +285,7 @@ module modular_square_2_cycles
 
     always_ff@(posedge clk)begin
         reg_S_h <= u_S_h;
-        reg_S_l <= u_S_l;
+        //reg_S_l <= u_S_l;
     end
 
     
@@ -303,7 +303,7 @@ module modular_square_2_cycles
     
 
     reduction_low #(.NUM_ELEMENTS(NUM_ELEMENTS), .BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN))
-        u_reduction_low(.S_l(reg_S_l), .xpb_high_sum(u_xpb_high_sum), .mid_sum(u_mid_sum));
+        u_reduction_low(.S_l(u_S_l), .xpb_high_sum(u_xpb_high_sum), .mid_sum(u_mid_sum));
     
 
     		
@@ -398,9 +398,11 @@ module reduction_high
 
     localparam EXTRA_BIT_XPB_H = $clog2((NUM_ELEMENTS+1)*3);
 
+    
 
     logic [EXTRA_BIT_XPB_H+WORD_LEN-1:0] xpb_high_temp0[NUM_ELEMENTS-1];
-    
+
+
     always_comb begin
         for(int i=0; i<NUM_ELEMENTS-1; i++)begin
             xpb_high_temp0[i] = { {(EXTRA_BIT_XPB_H){1'b0}},xpb_high[0][i]};
@@ -470,39 +472,38 @@ module alu_array
         end
     endgenerate
 
+    always_comb begin
+        for(int i=0; i<NUM_MULS; i++)begin
+            B_high[NUM_ELEMENTS-1][i] = 17'h0;
+            A_high[NUM_ELEMENTS-1][i] = 17'h0;
+        end
+    end
+
     
 
     logic [BIT_LEN-1:0] u_alu_A[NUM_ELEMENTS][NUM_MULS];
     logic [BIT_LEN-1:0] u_alu_B[NUM_ELEMENTS][NUM_MULS];
-    logic [ALU_OUT-1:0] u_alu_S_h[NUM_ELEMENTS-1];
-    logic [ALU_OUT-1:0] u_alu_S_l[NUM_ELEMENTS];
+    logic [ALU_OUT-1:0] u_alu_S[NUM_ELEMENTS];
 
+    always_comb begin
+        u_alu_A = flag_h? A_high: A_low;
+        u_alu_B = flag_h? B_high: B_low;
+    end
 
-
-    genvar h;
+    genvar k;
     generate
-        for(h=0; h < NUM_ELEMENTS-1; h++)begin
-            localparam NUM_RESULTS = integer'((h+1)/2) + ((h+1)%2);
-            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(h+1))
-                u_alu_col_h (.A(A_high[h][0:NUM_RESULTS-1]),.B(B_high[h][0:NUM_RESULTS-1]),.S(u_alu_S_h[h]));
-        end
-    endgenerate
-
-
-    genvar l;
-    generate
-        for(l=0; l < NUM_ELEMENTS; l++)begin
-            localparam NUM_RESULTS = integer'((l+1)/2) + ((l+1)%2);
-            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(l+1))
-                u_alu_col_l (.A(A_low[l][0:NUM_RESULTS-1]),.B(B_low[l][0:NUM_RESULTS-1]),.S(u_alu_S_l[l]));
+        for(k=0; k < NUM_ELEMENTS; k++)begin
+            localparam NUM_RESULTS = integer'((k+1)/2) + ((k+1)%2);
+            alu_col #(.NUM_ELEMENTS(NUM_ELEMENTS),.BIT_LEN(BIT_LEN), .WORD_LEN(WORD_LEN), .NUM_IN(k+1))
+                u_alu_col (.A(u_alu_A[k][0:NUM_RESULTS-1]),.B(u_alu_B[k][0:NUM_RESULTS-1]),.S(u_alu_S[k]));
         end
     endgenerate
     
 
     always_comb begin
-        S_low = u_alu_S_l;
-        for(int i=0; i<NUM_ELEMENTS-1; i++)begin
-            S_high[i] = u_alu_S_h[NUM_ELEMENTS-2-i];
+        S_low = u_alu_S;
+        for(int i=1; i<NUM_ELEMENTS; i++)begin
+            S_high[i-1] = u_alu_S[NUM_ELEMENTS-1-i];
         end
     end
 
@@ -614,6 +615,7 @@ module sel_high
     end
 
 endmodule
+
 
 
 
@@ -908,3 +910,4 @@ module full_adder
     	endcase
 	end
 endmodule
+
