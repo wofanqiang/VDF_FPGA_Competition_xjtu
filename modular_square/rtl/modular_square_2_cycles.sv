@@ -12,10 +12,10 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-*******************************************************************************/
+  *******************************************************************************/
+  
 
-
-module modular_square_3_cycles
+module modular_square_2_cycles
 #(
     parameter NUM_ELEMENTS          = 65,
     parameter BIT_LEN               = 17,
@@ -509,6 +509,13 @@ module alu_array
         end
     endgenerate
 
+    always_comb begin
+        for(int i=0; i<NUM_MULS; i++)begin
+            B_high[NUM_ELEMENTS-1][i] = 17'h0;
+            A_high[NUM_ELEMENTS-1][i] = 17'h0;
+        end
+    end
+
     
 
     logic [BIT_LEN-1:0] u_alu_A[NUM_ELEMENTS][NUM_MULS];
@@ -706,23 +713,15 @@ module alu_col
         end      
     end
 
-    logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_sum;
+    logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_c;
+    logic [BIT_LEN*2 + EXTRA_BITS - 1:0] pp_s;
 
-    //always_comb begin
-    //    pp_sum = pp_grid[0];
-    //    for(int i=1; i< NUM_IN; i++)begin
-    //        pp_sum = pp_sum + pp_grid[i];
-    //    end
-    //end
-    adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_IN),
-                        .BIT_LEN(BIT_LEN*2 + EXTRA_BITS))
-        adder_tree_2_to_1 
-            (
-                .terms(pp_grid),
-                .S(pp_sum)
-            );
 
-    assign S = pp_sum;
+    compressor_tree_3_to_2 #(.NUM_ELEMENTS(NUM_IN), .BIT_LEN(BIT_LEN*2 + EXTRA_BITS))
+            u_compressor_tree_3_to_2(.terms(pp_grid), .C(pp_c), .S(pp_s));
+
+    
+    assign S = pp_c + pp_s;
 
 endmodule
 
@@ -746,68 +745,206 @@ module dsp_multiplier
 endmodule
 
 
-(* use_dsp="no" *)
-module adder_tree_2_to_1
+/*******************************************************************************
+  Copyright 2019 Supranational LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*******************************************************************************/
+
+/*
+  Tree built out of 3:2 compressors.  
+  Parameterized to take any number of inputs, each of a common size
+*/
+
+module compressor_tree_3_to_2
    #(
      parameter int NUM_ELEMENTS      = 9,
      parameter int BIT_LEN           = 16
     )
    (
     input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
+    output logic [BIT_LEN-1:0] C,
     output logic [BIT_LEN-1:0] S
    );
 
+`ifdef FASTSIM
+   // This is intended for simulation only to improve compile and run time
+   always_comb begin
+      C = 0;
+      S = 0;
+      for(int k = 0; k < NUM_ELEMENTS; k++) begin
+         S += terms[k];
+      end
+   end
+   
+`else
 
-    generate
-        if (NUM_ELEMENTS == 1) begin // Return value
-            always_comb begin
-               S[BIT_LEN-1:0] = terms[0];
-            end
-        end else if (NUM_ELEMENTS == 2) begin // Return value
-            always_comb begin
-               S[BIT_LEN-1:0] = terms[0] + terms[1];
-            end
-        end else begin
-            localparam integer NUM_RESULTS = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2);
-            logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
+   // If there is only one or two elements, then return the input (no tree)
+   // If there are three elements, this is the last level in the tree
+   // For greater than three elements:
+   //   Instantiate a set of carry save adders to process this level's terms
+   //   Recursive instantiate this module to complete the rest of the tree
+   generate
+      if (NUM_ELEMENTS == 1) begin // Return value
+         always_comb begin
+            C[BIT_LEN-1:0] = '0;
+            S[BIT_LEN-1:0] = terms[0];
+         end
+      end
+      else if (NUM_ELEMENTS == 2) begin // Return value
+         always_comb begin
+            C[BIT_LEN-1:0] = terms[1];
+            S[BIT_LEN-1:0] = terms[0];
+         end
+      end
+      else if (NUM_ELEMENTS == 3) begin // last level
+         /* verilator lint_off UNUSED */
+        logic [BIT_LEN-1:0] Cout;
+         /* verilator lint_on UNUSED */
+         
+         carry_save_adder #(.BIT_LEN(BIT_LEN))
+            carry_save_adder (
+                              .A(terms[0]),
+                              .B(terms[1]),
+                              .Cin(terms[2]),
+                              .Cout(Cout),
+                             .S(S[BIT_LEN-1:0])
+                             );
+         always_comb begin
+            C[BIT_LEN-1:0] = {Cout[BIT_LEN-2:0], 1'b0};
+         end
+      end
+      else begin
+         //localparam integer NUM_RESULTS = ($rtoi($floor(NUM_ELEMENTS/3)) * 2) + 
+         //                                 (NUM_ELEMENTS%3);
+         localparam integer NUM_RESULTS = (integer'(NUM_ELEMENTS/3) * 2) + 
+                                          (NUM_ELEMENTS%3);
 
-            adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
-                              .BIT_LEN(BIT_LEN)
-            ) adder_tree_level (
-                               .terms(terms),
-                               .results(next_level_terms)
-            );
+         logic [BIT_LEN-1:0] next_level_terms[NUM_RESULTS];
 
-            adder_tree_2_to_1 #(.NUM_ELEMENTS(NUM_RESULTS),
-                                     .BIT_LEN(BIT_LEN)
-            ) adder_tree_2_to_1 (
-                                     .terms(next_level_terms),
-                                     .S(S)
-            );
-        end
-    endgenerate
+         carry_save_adder_tree_level #(.NUM_ELEMENTS(NUM_ELEMENTS),
+                                       .BIT_LEN(BIT_LEN)
+                                      )
+            carry_save_adder_tree_level (
+                                         .terms(terms),
+                                         .results(next_level_terms)
+                                        );
+
+         compressor_tree_3_to_2 #(.NUM_ELEMENTS(NUM_RESULTS),
+                                  .BIT_LEN(BIT_LEN)
+                                 )
+            compressor_tree_3_to_2 (
+                                    .terms(next_level_terms),
+                                    .C(C),
+                                    .S(S)
+                                   );
+      end
+   endgenerate
+`endif
 endmodule
 
 
-module adder_tree_level
+
+module carry_save_adder_tree_level
    #(
      parameter int NUM_ELEMENTS = 3,
      parameter int BIT_LEN      = 19,
 
-     parameter int NUM_RESULTS  = integer'(NUM_ELEMENTS/2) + (NUM_ELEMENTS%2)
+     parameter int NUM_RESULTS  = (integer'(NUM_ELEMENTS/3) * 2) + 
+                                   (NUM_ELEMENTS%3)
     )
    (
     input  logic [BIT_LEN-1:0] terms[NUM_ELEMENTS],
     output logic [BIT_LEN-1:0] results[NUM_RESULTS]
    );
 
-   always_comb begin
-      for (int i=0; i<(NUM_ELEMENTS / 2); i++) begin
-         results[i] = terms[i*2] + terms[i*2+1];
+   genvar i;
+   generate
+      for (i=0; i<(NUM_ELEMENTS / 3); i++) begin : csa_insts
+         // Add three consecutive terms 
+         carry_save_adder #(.BIT_LEN(BIT_LEN))
+            carry_save_adder (
+                              .A(terms[i*3]),
+                              .B(terms[(i*3)+1]),
+                              .Cin(terms[(i*3)+2]),
+                              .Cout({results[i*2][0],
+                                     results[i*2][BIT_LEN-1:1]}),
+                              .S(results[(i*2)+1][BIT_LEN-1:0])
+                             );
       end
 
-      if( NUM_ELEMENTS % 2 == 1 ) begin
-         results[NUM_RESULTS-1] = terms[NUM_ELEMENTS-1];
+      // Save any unused terms for the next level 
+      for (i=0; i<(NUM_ELEMENTS % 3); i++) begin : csa_level_extras
+         always_comb begin
+            results[(NUM_RESULTS - 1) - i][BIT_LEN-1:0] = 
+               terms[(NUM_ELEMENTS- 1) - i][BIT_LEN-1:0];
+         end
       end
-   end
+   endgenerate
 endmodule
+
+
+module carry_save_adder
+   #(
+     parameter int BIT_LEN = 19
+    )
+   (
+    input  logic [BIT_LEN-1:0] A,
+    input  logic [BIT_LEN-1:0] B,
+    input  logic [BIT_LEN-1:0] Cin,
+    output logic [BIT_LEN-1:0] Cout,
+    output logic [BIT_LEN-1:0] S
+   );
+
+   genvar i;
+   generate
+      for (i=0; i<BIT_LEN; i++) begin : csa_fas
+         full_adder full_adder(
+                               .A(A[i]),
+                               .B(B[i]),
+                               .Cin(Cin[i]),
+                               .Cout(Cout[i]),
+                               .S(S[i])
+                              );
+      end
+   endgenerate
+endmodule
+
+
+module full_adder
+   (
+    input  logic A,
+    input  logic B,
+    input  logic Cin,
+    output logic Cout,
+    output logic S
+   );
+
+   //always_comb begin
+   //   S    =  A ^ B ^ Cin;
+   //   Cout = (A & B) | (Cin & (A ^ B));
+   //end
+   always_comb begin
+    	case({A,B,Cin})
+    		3'b000 : {Cout, S} = 2'd0;
+    		3'b001 : {Cout, S} = 2'd1;
+    		3'b010 : {Cout, S} = 2'd1;
+    		3'b011 : {Cout, S} = 2'd2;
+    		3'b100 : {Cout, S} = 2'd1;
+    		3'b101 : {Cout, S} = 2'd2;
+    		3'b110 : {Cout, S} = 2'd2;
+    		3'b111 : {Cout, S} = 2'd3;
+    	endcase
+	end
+endmodule
+

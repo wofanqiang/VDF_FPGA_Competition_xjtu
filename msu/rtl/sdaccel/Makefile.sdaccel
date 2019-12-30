@@ -38,9 +38,14 @@ LDCLFLAGS += -DMSU_SQ_OUT_BITS_DEF=$(SQ_OUT_BITS)
 
 #LDCLFLAGS += -R2 
 
+<<<<<<< HEAD
 LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
                    {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
+=======
+>>>>>>> test
 LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
+                   {STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT}={400}"
+#LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
                    {STEPS.SYNTH_DESIGN.ARGS.RETIMING}={true}"
 #LDCLFLAGS += --xp "vivado_prop:run.pfm_dynamic_vdf_1_0_synth_1.\
                    {STEPS.SYNTH_DESIGN.ARGS.KEEP_EQUIVALENT_REGISTERS}={true}"
@@ -68,8 +73,8 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 # Add in additional constraints, such as pblocks
 # This constraint places all performance critical logic in SLR2, which is
 # free of shell logic. 
-#PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
-#LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
+PLACER_CONSTRS     = $(realpath ../placer_constrs.xdc)
+LDCLFLAGS += --xp "vivado_prop:run.impl_1.{STEPS.PLACE_DESIGN.TCL.PRE}=\
                    $(PLACER_CONSTRS)"
 
 LDCLFLAGS += --kernel_frequency 125
