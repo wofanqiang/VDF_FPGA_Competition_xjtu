@@ -30,7 +30,7 @@ endif
 DIRECT_TB             ?= 0
 
 # Constants for the Ozturk multiplier
-REDUNDANT_ELEMENTS     = 1
+REDUNDANT_ELEMENTS     = 0
 NONREDUNDANT_ELEMENTS ?= $(shell expr $(MOD_LEN) \/ $(WORD_LEN))
 NUM_ELEMENTS           = $(shell expr $(NONREDUNDANT_ELEMENTS) \+ \
 	                              $(REDUNDANT_ELEMENTS))
