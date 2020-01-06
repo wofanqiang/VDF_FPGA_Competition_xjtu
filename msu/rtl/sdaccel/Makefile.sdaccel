@@ -56,7 +56,7 @@ LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
 #                   {STEPS.PLACE_DESIGN.ARGS.DIRECTIVE}={ExtraTimingOpt}"
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
                    {STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE}=\
-                   {AggressiveExplore}"
+                   {AlternateFlowWithRetiming}"
 
 # Vivado 2018.3
 LDCLFLAGS += --xp "vivado_prop:run.impl_1.\
